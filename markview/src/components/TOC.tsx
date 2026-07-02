@@ -1,38 +1,75 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 
+// Find the nearest scrollable ancestor so the scroll-spy tracks the element
+// that actually scrolls (the content pane), not the window.
+function getScrollParent(el: HTMLElement | null): HTMLElement | null {
+  let node = el?.parentElement ?? null;
+  while (node) {
+    const overflowY = getComputedStyle(node).overflowY;
+    if (/(auto|scroll|overlay)/.test(overflowY) && node.scrollHeight > node.clientHeight) {
+      return node;
+    }
+    node = node.parentElement;
+  }
+  return null;
+}
+
 export default function TOC() {
   const headings = useAppStore((s) => s.headings);
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
-    const visibleIds = new Set<string>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            visibleIds.add(entry.target.id);
-          } else {
-            visibleIds.delete(entry.target.id);
-          }
-        });
-        // Pick the first visible heading in document order
-        for (const h of headings) {
-          if (visibleIds.has(h.id)) {
-            setActiveId(h.id);
-            break;
-          }
-        }
-      },
-      { rootMargin: '0px 0px -80% 0px' }
-    );
+    if (headings.length === 0) return;
 
-    headings.forEach((heading) => {
-      const el = document.getElementById(heading.id);
-      if (el) observer.observe(el);
-    });
+    // Active = the last heading above a reading line near the top of the
+    // viewport. Elements are looked up fresh on every pass so this stays
+    // correct even if the rendered HTML is replaced (search, theme, etc).
+    const computeActive = () => {
+      const first = document.getElementById(headings[0].id);
+      if (!first) return;
+      const container = getScrollParent(first);
+      const top = container ? container.getBoundingClientRect().top : 0;
+      const viewport = container ? container.clientHeight : window.innerHeight;
+      const line = top + viewport * 0.2;
 
-    return () => observer.disconnect();
+      let currentId = headings[0].id;
+      for (const h of headings) {
+        const el = document.getElementById(h.id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top - line <= 1) currentId = h.id;
+        else break;
+      }
+
+      // At the very bottom the last heading should win even if its section is
+      // too short to ever reach the reading line.
+      if (container && container.scrollTop + container.clientHeight >= container.scrollHeight - 2) {
+        currentId = headings[headings.length - 1].id;
+      }
+
+      setActiveId(currentId);
+    };
+
+    const first = document.getElementById(headings[0].id);
+    const scroller: EventTarget = getScrollParent(first) ?? window;
+    scroller.addEventListener('scroll', computeActive, { passive: true });
+    window.addEventListener('resize', computeActive);
+
+    // Recompute once layout settles (theme, fonts, diagrams render after the
+    // content is injected on a cold start and shift heading positions).
+    const content = first?.closest('.markdown-body') ?? getScrollParent(first);
+    const resizeObserver = new ResizeObserver(computeActive);
+    if (content) resizeObserver.observe(content);
+
+    computeActive();
+    const raf = requestAnimationFrame(computeActive);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      scroller.removeEventListener('scroll', computeActive);
+      window.removeEventListener('resize', computeActive);
+      resizeObserver.disconnect();
+    };
   }, [headings]);
 
   if (headings.length === 0) {
