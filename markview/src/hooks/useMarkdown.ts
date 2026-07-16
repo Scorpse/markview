@@ -9,6 +9,7 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import { visit } from 'unist-util-visit';
 import { useAppStore, Heading } from '../stores/appStore';
+import { renderDiagramsInHtml } from '../utils/diagrams';
 
 // Build processor once at module level
 let headingsCollector: Heading[] = [];
@@ -50,17 +51,22 @@ const processor = unified()
 export function useMarkdown() {
   const rawMarkdown = useAppStore((s) => s.rawMarkdown);
   const activeTabId = useAppStore((s) => s.activeTabId);
+  const theme = useAppStore((s) => s.theme);
   const pending = useRef(0);
 
+  // Diagrams carry the theme baked into their SVG, so a theme switch has to go
+  // back through the pipeline — same path as a content change, no second one.
   useEffect(() => {
     if (rawMarkdown) {
       const id = ++pending.current;
-      processor.process(rawMarkdown).then((file) => {
+      processor.process(rawMarkdown).then(async (file) => {
         if (id !== pending.current) return; // stale
-        useAppStore.getState().updateActiveTab({
-          renderedHTML: String(file),
-          headings: [...headingsCollector],
-        });
+        // Read the collector before the next await — it is module state and a
+        // newer run would overwrite it.
+        const headings = [...headingsCollector];
+        const html = await renderDiagramsInHtml(String(file), theme);
+        if (id !== pending.current) return; // superseded while rendering
+        useAppStore.getState().updateActiveTab({ renderedHTML: html, headings });
       }).catch((error) => {
         console.error("Failed to process markdown", error);
       });
@@ -70,5 +76,5 @@ export function useMarkdown() {
         headings: [],
       });
     }
-  }, [rawMarkdown, activeTabId]);
+  }, [rawMarkdown, activeTabId, theme]);
 }

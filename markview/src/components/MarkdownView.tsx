@@ -2,8 +2,6 @@ import { useEffect, useRef, useMemo } from 'react';
 import { open } from '@tauri-apps/plugin-shell';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { useAppStore } from '../stores/appStore';
-import { rerenderMermaidForTheme } from '../utils/mermaid';
-import { rerenderVegaForTheme } from '../utils/vega';
 
 function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -13,7 +11,6 @@ export default function MarkdownView() {
   const renderedHTML = useAppStore((s) => s.renderedHTML);
   const searchQuery = useAppStore((s) => s.searchQuery);
   const currentMatch = useAppStore((s) => s.currentMatch);
-  const theme = useAppStore((s) => s.theme);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Compute highlighted HTML from string (no DOM manipulation)
@@ -26,8 +23,16 @@ export default function MarkdownView() {
 
     // Split HTML into tags and text, only highlight in text segments
     const parts = renderedHTML.split(/(<[^>]*>)/);
+    // Rendered diagrams are SVG: a <mark> inside them is not HTML, it is a
+    // foreign element the renderer drops, taking the label with it. Skip them.
+    let svgDepth = 0;
     const highlighted = parts.map(part => {
-      if (part.startsWith('<')) return part;
+      if (part.startsWith('<')) {
+        if (/^<svg[\s>]/i.test(part)) svgDepth++;
+        else if (/^<\/svg\s*>/i.test(part)) svgDepth = Math.max(0, svgDepth - 1);
+        return part;
+      }
+      if (svgDepth > 0) return part;
       return part.replace(regex, (match) => {
         count++;
         const bg = count === currentMatch ? '#f97316' : '#fbbf24';
@@ -114,24 +119,6 @@ export default function MarkdownView() {
       }
     });
   }, [displayHTML]);
-
-  // Render Mermaid + Vega diagrams on content or theme change. The cancelled
-  // flag is checked inside the renderers between async steps so a re-render
-  // (e.g. theme load completing right after content load on cold launch)
-  // can supersede an in-flight render without leaving half-rendered DOM.
-  useEffect(() => {
-    const container = contentRef.current;
-    if (!container) return;
-    let cancelled = false;
-    const isCancelled = () => cancelled;
-    rerenderMermaidForTheme(container, theme, isCancelled).catch((e) => {
-      if (!cancelled) console.error('Mermaid render failed', e);
-    });
-    rerenderVegaForTheme(container, theme, isCancelled).catch((e) => {
-      if (!cancelled) console.error('Vega render failed', e);
-    });
-    return () => { cancelled = true; };
-  }, [renderedHTML, theme]);
 
   return (
     <div className="p-8 max-w-4xl mx-auto pb-32">
