@@ -18,6 +18,24 @@ function vegaThemeFor(theme: 'light' | 'dark') {
   return theme === 'dark' ? 'dark' : undefined;
 }
 
+export async function renderVegaSource(
+  source: string,
+  mode: 'vega' | 'vega-lite',
+  theme: 'light' | 'dark',
+): Promise<HTMLElement> {
+  const spec = JSON.parse(source);
+  const wrapper = document.createElement('div');
+  wrapper.className = 'vega-chart';
+  const embed = await getEmbed();
+  await embed(wrapper, spec as any, {
+    mode: mode as any,
+    actions: false,
+    renderer: 'svg',
+    theme: vegaThemeFor(theme),
+  });
+  return wrapper;
+}
+
 /**
  * Scan container for <code class="language-vega-lite"> and <code class="language-vega">.
  * Replace parent <pre> with an SVG rendering of the spec. Skips already-rendered

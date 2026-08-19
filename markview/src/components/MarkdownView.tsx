@@ -1,9 +1,12 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { lazy, Suspense, useEffect, useRef, useMemo, useState } from 'react';
 import { open } from '@tauri-apps/plugin-shell';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { useAppStore } from '../stores/appStore';
-import { rerenderMermaidForTheme } from '../utils/mermaid';
-import { rerenderVegaForTheme } from '../utils/vega';
+import { renderSpecializedBlocks } from '../renderers/renderBlocks';
+import { documentWidthClass } from './documentLayout';
+import { isMarpDocument } from '../markdown/marp';
+
+const MarpView = lazy(() => import('./MarpView'));
 
 function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -14,7 +17,15 @@ export default function MarkdownView() {
   const searchQuery = useAppStore((s) => s.searchQuery);
   const currentMatch = useAppStore((s) => s.currentMatch);
   const theme = useAppStore((s) => s.theme);
+  const readableLineLength = useAppStore((s) => s.readableLineLength);
+  const frontmatter = useAppStore((s) => s.frontmatter);
+  const rawMarkdown = useAppStore((s) => s.rawMarkdown);
+  const activeTabId = useAppStore((s) => s.activeTabId);
+  const [slidesMode, setSlidesMode] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const marpDocument = isMarpDocument(frontmatter);
+
+  useEffect(() => setSlidesMode(false), [activeTabId]);
 
   // Compute highlighted HTML from string (no DOM manipulation)
   const { displayHTML, matchCount } = useMemo(() => {
@@ -124,22 +135,31 @@ export default function MarkdownView() {
     if (!container) return;
     let cancelled = false;
     const isCancelled = () => cancelled;
-    rerenderMermaidForTheme(container, theme, isCancelled).catch((e) => {
-      if (!cancelled) console.error('Mermaid render failed', e);
-    });
-    rerenderVegaForTheme(container, theme, isCancelled).catch((e) => {
-      if (!cancelled) console.error('Vega render failed', e);
+    renderSpecializedBlocks(container, theme, isCancelled).catch((e) => {
+      if (!cancelled) console.error('Specialized renderer failed', e);
     });
     return () => { cancelled = true; };
-  }, [renderedHTML, theme]);
+  }, [displayHTML, theme]);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto pb-32">
+    <div className={documentWidthClass(readableLineLength)}>
+      {marpDocument && (
+        <div className="marp-mode-toggle no-print" role="group" aria-label="Marp view mode">
+          <button className={!slidesMode ? 'active' : ''} onClick={() => setSlidesMode(false)}>Document</button>
+          <button className={slidesMode ? 'active' : ''} onClick={() => setSlidesMode(true)}>Slides</button>
+        </div>
+      )}
+      {marpDocument && slidesMode ? (
+        <Suspense fallback={<div className="marp-loading">Loading slides…</div>}>
+          <MarpView source={rawMarkdown} />
+        </Suspense>
+      ) : (
       <div
         ref={contentRef}
         className="markdown-body"
         dangerouslySetInnerHTML={{ __html: displayHTML }}
       />
+      )}
     </div>
   );
 }
