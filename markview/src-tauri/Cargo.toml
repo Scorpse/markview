@@ -22,9 +22,13 @@ tauri-build = { version = "2", features = [] }
 # devUrl is used. Without this, release builds also try to load devUrl.
 default = ["custom-protocol"]
 custom-protocol = ["tauri/custom-protocol"]
+# Opt-in webview inspector. `lib.rs` gates the MARKVIEW_DEVTOOLS hook on this
+# feature, so it has to be declared here to exist; build with
+# `--features devtools` when you need it. Release bundles stay without it.
+devtools = ["tauri/devtools"]
 
 [dependencies]
-tauri = { version = "2", features = ["devtools"] }
+tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
