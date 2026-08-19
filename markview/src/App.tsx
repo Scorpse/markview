@@ -212,7 +212,7 @@ function App() {
           {searchVisible && <SearchBar />}
 
           <div className="flex-1 overflow-y-auto w-full relative">
-            {hasActiveFile ? <MarkdownView /> : <WelcomePage loadFile={loadFile} />}
+            {hasActiveFile ? <MarkdownView loadFile={loadFile} /> : <WelcomePage loadFile={loadFile} />}
           </div>
         </main>
       </div>

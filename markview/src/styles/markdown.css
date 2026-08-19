@@ -265,3 +265,90 @@
 .marp-slides > svg,
 .marp-slides > section { max-width: 100%; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18); }
 .marp-loading { padding: 32px; text-align: center; color: #6a737d; }
+
+.markdown-body .wavedrom-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+  overflow-x: auto;
+  contain: layout style paint;
+}
+
+.markdown-body .wavedrom-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Hover toolbar for rendered diagram blocks. Hidden until the block is
+   hovered or a control has keyboard focus, so ordinary reading stays clean. */
+.markdown-body .specialized-renderer {
+  position: relative;
+}
+
+.markdown-body .renderer-controls {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 2;
+}
+
+.markdown-body .specialized-renderer:hover .renderer-controls,
+.markdown-body .renderer-controls:focus-within {
+  opacity: 1;
+}
+
+.markdown-body .renderer-control {
+  font-size: 11px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.markdown-body .renderer-control:hover {
+  background: var(--tab-hover);
+}
+
+.markdown-body .renderer-source {
+  margin: 16px 0;
+}
+
+.markdown-body .specialized-renderer-error .renderer-controls {
+  position: static;
+  opacity: 1;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.image-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(0, 0, 0, 0.8);
+  cursor: zoom-out;
+}
+
+.image-zoom-overlay img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.markdown-body img {
+  cursor: zoom-in;
+}
+
+.markdown-body a img {
+  cursor: pointer;
+}

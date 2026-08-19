@@ -23,6 +23,7 @@
     "@terrastruct/d2": "^0.1.33",
     "@viz-js/viz": "^3.29.0",
     "highlight.js": "^11.11.1",
+    "json5": "^2.2.3",
     "katex": "^0.16.33",
     "lucide-react": "^0.575.0",
     "markmap-lib": "^0.18.12",
@@ -46,6 +47,7 @@
     "tailwindcss": "^4.2.1",
     "unified": "^11.0.5",
     "vega-embed": "^7.1.0",
+    "wavedrom": "^3.6.2",
     "yaml": "^2.9.0",
     "zustand": "^5.0.11"
   },

@@ -10,6 +10,7 @@ describe('renderer registry', () => {
     ['graphviz', 'graphviz'],
     ['d2', 'd2'],
     ['markmap', 'markmap'],
+    ['wavedrom', 'wavedrom'],
   ])('maps %s to %s', (language, id) => {
     expect(getRenderer(language)?.id).toBe(id);
   });
@@ -20,6 +21,6 @@ describe('renderer registry', () => {
   });
 
   it('publishes every alias for the syntax-highlighting exclusion list', () => {
-    expect(specializedLanguages).toEqual(['mermaid', 'vega', 'vega-lite', 'dot', 'graphviz', 'd2', 'markmap']);
+    expect(specializedLanguages).toEqual(['mermaid', 'vega', 'vega-lite', 'dot', 'graphviz', 'd2', 'markmap', 'wavedrom']);
   });
 });

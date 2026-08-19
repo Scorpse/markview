@@ -1,17 +1,19 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useAppStore } from './appStore';
 
-describe('readable line length preference', () => {
+describe('document width preference', () => {
   beforeEach(() => {
-    useAppStore.setState({ readableLineLength: true });
+    useAppStore.setState({ documentWidth: 'narrow' });
   });
 
   it('defaults to the readable centered layout', () => {
-    expect(useAppStore.getState().readableLineLength).toBe(true);
+    expect(useAppStore.getState().documentWidth).toBe('narrow');
   });
 
-  it('can switch to fluid document width', () => {
-    useAppStore.getState().setReadableLineLength(false);
-    expect(useAppStore.getState().readableLineLength).toBe(false);
+  it('can switch to any width step', () => {
+    useAppStore.getState().setDocumentWidth('extra-wide');
+    expect(useAppStore.getState().documentWidth).toBe('extra-wide');
+    useAppStore.getState().setDocumentWidth('full');
+    expect(useAppStore.getState().documentWidth).toBe('full');
   });
 });

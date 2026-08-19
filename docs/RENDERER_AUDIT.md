@@ -29,3 +29,15 @@ Extract Markdown conversion into a testable function, add sanitization at the HA
 The refactor above is implemented. The final ordinary application chunk is 499.38 kB (176.92 kB gzip), down from the 859.40 kB (260.44 kB gzip) baseline. Mermaid, Vega, Graphviz, D2, Markmap, and Marp are emitted as separate lazy chunks. D2's local compiler is the largest payload at 8.19 MB (5.99 MB gzip), but it is loaded only when a D2 fence exists. Marp is 3.63 MB (1.20 MB gzip) and loads only after the user selects Slides on a Marp document.
 
 The fork adds 24 automated checks across Markdown behavior, sanitization, icon allowlisting, heading stability, renderer aliases/fallback, SVG active-content stripping, Marp detection, preference state, and document-width selection. A clean npm install reports zero vulnerabilities. `cargo check` succeeds with the upstream pre-existing warning that `devtools` is referenced as an undeclared Cargo feature.
+
+## Follow-up pass
+
+A later pass closed the remaining plan items that were still open after the first fork release.
+
+1. WaveDrom joins the registry as the final Phase D renderer (`src/renderers/wavedrom.ts`). Sources are JavaScript object literals, so they are parsed with JSON5 rather than `eval` or WaveDrom's own `eva` helper; document content never reaches an interpreter. The generated SVG passes through the same `safeSvgElement` scrubber as Graphviz. Dark mode swaps in WaveDrom's `dark` skin, which is fetched as its own 44.11 kB chunk only when a dark-theme diagram exists.
+2. `renderMarkdown.ts` no longer keeps its own copy of the specialized-language list; it imports `specializedLanguages` from the registry so the syntax-highlighting exclusion list cannot drift from the renderer aliases.
+3. Rendered diagram blocks gain the hover toolbar from plan section 14.2. `renderBlocks.ts` now wraps each rendered element in a `.specialized-renderer` container holding a controls bar, the rendered output, and a hidden source `<pre>`. Copy and show-source/show-diagram toggling never discard the rendered element, and the existing restore-before-rerender path is unchanged because the data attributes still live on the wrapper.
+4. Relative links and images now resolve against the directory of the open document (plan sections 14.3 and 14.4). `src/utils/resolvePath.ts` holds the string-only path logic for both Windows and POSIX; previously `convertFileSrc` was called on an unresolved relative path, so relative images did not load at all. Relative `.md` targets open in a MarkView tab, other local targets go to the OS handler, and clicking an image opens a full-size overlay.
+5. The readable-line-length boolean becomes a four-step width cycle (narrow, wide, extra wide, full). The stored preference migrates from the old boolean on first launch.
+
+The ordinary application chunk stays at 499.38 kB (176.91 kB gzip), unchanged from the previous fork build, because every addition is either lazy-loaded or pure CSS and path logic. Automated checks rise from 24 to 46.

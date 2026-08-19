@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { load, Store } from '@tauri-apps/plugin-store';
 import { useAppStore } from '../stores/appStore';
+import { documentWidthFromLegacyPreference, isDocumentWidth } from '../components/documentLayout';
 
 // Single store instance, loaded once
 let storePromise: Promise<Store> | null = null;
@@ -12,7 +13,7 @@ function getStore() {
 }
 
 export function useTheme() {
-  const { theme, setTheme, fontSize, setFontSize, readableLineLength, setReadableLineLength, setRecentFiles, setShowSetDefault } = useAppStore();
+  const { theme, setTheme, fontSize, setFontSize, documentWidth, setDocumentWidth, setRecentFiles, setShowSetDefault } = useAppStore();
 
   useEffect(() => {
     async function initStore() {
@@ -29,9 +30,15 @@ export function useTheme() {
           setFontSize(savedFontSize.value);
         }
 
-        const savedReadableLineLength = await store.get<{value: boolean}>('readableLineLength');
-        if (savedReadableLineLength && typeof savedReadableLineLength.value === 'boolean') {
-          setReadableLineLength(savedReadableLineLength.value);
+        const savedDocumentWidth = await store.get<{value: string}>('documentWidth');
+        if (savedDocumentWidth && isDocumentWidth(savedDocumentWidth.value)) {
+          setDocumentWidth(savedDocumentWidth.value);
+        } else {
+          // Migrate the pre-cycle readable-line-length boolean.
+          const legacy = await store.get<{value: boolean}>('readableLineLength');
+          if (legacy && typeof legacy.value === 'boolean') {
+            setDocumentWidth(documentWidthFromLegacyPreference(legacy.value));
+          }
         }
 
         const savedRecent = await store.get<{value: string[]}>('recentFiles');
@@ -76,10 +83,10 @@ export function useTheme() {
 
   useEffect(() => {
     getStore().then(async (store) => {
-      await store.set('readableLineLength', { value: readableLineLength });
+      await store.set('documentWidth', { value: documentWidth });
       await store.save();
     }).catch(() => {});
-  }, [readableLineLength]);
+  }, [documentWidth]);
 }
 
 export async function saveHasPromptedDefault() {
