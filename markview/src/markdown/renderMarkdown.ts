@@ -18,14 +18,13 @@ import type { Heading } from '../stores/appStore';
 import { rehypeAlerts } from './plugins/rehypeAlerts';
 import { remarkFrontmatterData } from './plugins/remarkFrontmatterData';
 import { remarkLucideIcons } from './plugins/remarkLucideIcons';
+import { specializedLanguages } from '../renderers/registry';
 
 export interface RenderedMarkdown {
   html: string;
   headings: Heading[];
   frontmatter: Record<string, unknown>;
 }
-
-const specializedLanguages = ['mermaid', 'vega-lite', 'vega', 'dot', 'graphviz', 'd2', 'markmap'];
 
 const sanitizeSchema: Schema = {
   ...defaultSchema,

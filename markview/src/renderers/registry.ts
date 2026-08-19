@@ -6,6 +6,7 @@ const renderers: readonly RendererDefinition[] = [
   { id: 'graphviz', languages: ['dot', 'graphviz'], load: () => import('./graphviz') },
   { id: 'd2', languages: ['d2'], load: () => import('./d2') },
   { id: 'markmap', languages: ['markmap'], load: () => import('./markmap') },
+  { id: 'wavedrom', languages: ['wavedrom'], load: () => import('./wavedrom') },
 ];
 
 export const specializedLanguages = renderers.flatMap((renderer) => [...renderer.languages]);

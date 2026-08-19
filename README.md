@@ -2,7 +2,7 @@
 
 This fork extends MarkView for AI-generated technical Markdown while preserving its fast, local, read-only workflow.
 
-Additional support includes GitHub alerts, emoji shortcodes, YAML front matter, definition lists, subscript/superscript, safe Lucide icon shortcodes, local Graphviz/DOT, D2 and Markmap diagrams, and opt-in Marp slides. The toolbar's readable-line-length control switches between a centered reading column and an Obsidian-style full-width document; the choice is remembered.
+Additional support includes GitHub alerts, emoji shortcodes, YAML front matter, definition lists, subscript/superscript, safe Lucide icon shortcodes, local Graphviz/DOT, D2, Markmap and WaveDrom diagrams, and opt-in Marp slides. Rendered diagrams carry a hover toolbar for copying or revealing their source, links and images resolve relative to the open document, and relative `.md` links open in a new tab inside MarkView. The toolbar's width control cycles the reading column through narrow, wide, extra wide and full width; the choice is remembered.
 
 [![Latest release](https://img.shields.io/github/v/release/scos-lab/markview?label=latest&color=blue)](https://github.com/scos-lab/markview/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)

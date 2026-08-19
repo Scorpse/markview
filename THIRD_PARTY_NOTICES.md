@@ -14,5 +14,7 @@ MarkView remains licensed under the MIT License in `LICENSE`. The fork adds the 
 | `remark-supersub` | MIT | Subscript and superscript syntax |
 | `rehype-raw`, `rehype-sanitize` | MIT | Safe raw-HTML parsing and sanitization |
 | `yaml` | ISC | YAML metadata parsing |
+| `wavedrom` | MIT | Local digital-timing-diagram rendering |
+| `json5` | MIT | Parsing WaveDrom object-literal sources without evaluating them |
 
 No document or diagram source is sent to a hosted rendering service. D2's MPL-2.0 obligations apply to modifications of D2's covered files; this fork consumes the unmodified npm package as a dynamically loaded dependency.
