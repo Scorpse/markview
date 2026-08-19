@@ -12,7 +12,7 @@ function getStore() {
 }
 
 export function useTheme() {
-  const { theme, setTheme, fontSize, setFontSize, setRecentFiles, setShowSetDefault } = useAppStore();
+  const { theme, setTheme, fontSize, setFontSize, readableLineLength, setReadableLineLength, setRecentFiles, setShowSetDefault } = useAppStore();
 
   useEffect(() => {
     async function initStore() {
@@ -27,6 +27,11 @@ export function useTheme() {
         const savedFontSize = await store.get<{value: number}>('fontSize');
         if (savedFontSize && typeof savedFontSize.value === 'number') {
           setFontSize(savedFontSize.value);
+        }
+
+        const savedReadableLineLength = await store.get<{value: boolean}>('readableLineLength');
+        if (savedReadableLineLength && typeof savedReadableLineLength.value === 'boolean') {
+          setReadableLineLength(savedReadableLineLength.value);
         }
 
         const savedRecent = await store.get<{value: string[]}>('recentFiles');
@@ -68,6 +73,13 @@ export function useTheme() {
       await store.save();
     }).catch(() => {});
   }, [fontSize]);
+
+  useEffect(() => {
+    getStore().then(async (store) => {
+      await store.set('readableLineLength', { value: readableLineLength });
+      await store.save();
+    }).catch(() => {});
+  }, [readableLineLength]);
 }
 
 export async function saveHasPromptedDefault() {

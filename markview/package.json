@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "vite preview",
     "tauri": "tauri"
   },
   "dependencies": {
+    "@marp-team/marp-core": "^4.4.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tauri-apps/api": "^2.10.1",
     "@tauri-apps/plugin-dialog": "^2.6.0",
@@ -17,31 +20,49 @@
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-shell": "^2.3.5",
     "@tauri-apps/plugin-store": "^2.4.2",
+    "@terrastruct/d2": "^0.1.33",
+    "@viz-js/viz": "^3.29.0",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.33",
     "lucide-react": "^0.575.0",
+    "markmap-lib": "^0.18.12",
+    "markmap-view": "^0.18.12",
     "mermaid": "^11.14.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "rehype-highlight": "^7.0.2",
     "rehype-katex": "^7.0.1",
+    "rehype-raw": "^7.0.0",
+    "rehype-sanitize": "^6.0.0",
     "rehype-stringify": "^10.0.1",
+    "remark-definition-list": "^2.0.0",
+    "remark-emoji": "^5.0.2",
+    "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
+    "remark-supersub": "^1.0.0",
     "tailwindcss": "^4.2.1",
     "unified": "^11.0.5",
     "vega-embed": "^7.1.0",
+    "yaml": "^2.9.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^25.3.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.6.0",
+    "jsdom": "^30.0.1",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "@xmldom/xmldom": "0.9.11"
   }
 }

@@ -1,12 +1,8 @@
 # MarkView
 
-> [!IMPORTANT]
-> **Project status (August 2026): MarkView is feature-frozen and no longer under active development.**
-> It will receive **no further updates or releases**, but the project **remains open source** under the
-> MIT license — the code stays available and existing releases keep working as-is.
-> Active development has moved to its successor, **[Rho MD](https://rho.md)** — a Markdown reader +
-> notebook built on everything we learned here, with interactive documents, a document library, and
-> Android support. Issues and pull requests on this repository may receive limited or no attention.
+This fork extends MarkView for AI-generated technical Markdown while preserving its fast, local, read-only workflow.
+
+Additional support includes GitHub alerts, emoji shortcodes, YAML front matter, definition lists, subscript/superscript, safe Lucide icon shortcodes, local Graphviz/DOT, D2 and Markmap diagrams, and opt-in Marp slides. The toolbar's readable-line-length control switches between a centered reading column and an Obsidian-style full-width document; the choice is remembered.
 
 [![Latest release](https://img.shields.io/github/v/release/scos-lab/markview?label=latest&color=blue)](https://github.com/scos-lab/markview/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -43,10 +39,11 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 | Format | Link |
 |---------|------|
+| Microsoft Store | [Get it from Microsoft Store](https://apps.microsoft.com/detail/9n3cwdlvl9tq?hl=en-gb&gl=AU&ocid=pdpshare) |
 | Portable (.exe) | [MarkView_v1.0.5_portable.exe](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView_v1.0.5_portable.exe) |
 | Installer (MSI) | [MarkView_v1.0.5_x64.msi](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView.-.Markdown.Reader_1.0.5_x64_en-US.msi) |
 
-> **Note:** Windows SmartScreen may warn about downloaded `.exe` / `.msi` files because they are not code-signed. To bypass: click **"More info"** → **"Run anyway"**. Alternatively, right-click the file → **Properties** → check **"Unblock"** → OK.
+> **Note:** Windows SmartScreen may warn about downloaded `.exe` / `.msi` files because they are not code-signed. To bypass: click **"More info"** → **"Run anyway"**. Alternatively, right-click the file → **Properties** → check **"Unblock"** → OK. The **Microsoft Store** version does not have this issue.
 
 ### Linux
 
@@ -54,6 +51,8 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 |--------|------|-------|
 | `.deb` (1.0.5) | [MarkView-1.0.5-amd64.deb](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView-1.0.5-amd64.deb) | Ubuntu 24.04+, Debian 13+ (uses system WebKit) |
 | `.AppImage` (1.0.5) | [MarkView-1.0.5-amd64.AppImage](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView-1.0.5-amd64.AppImage) | Any distro with `libfuse2`, self-contained |
+| Snap Store | [![Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/markview-reader) | `sudo snap install markview-reader` |
+| Flathub | `flatpak install io.github.scos-lab.MarkView` | *pending review* |
 
 ```bash
 # .deb install

@@ -1,7 +1,12 @@
-import { useEffect, useRef, useMemo } from 'react';
+import { lazy, Suspense, useEffect, useRef, useMemo, useState } from 'react';
 import { open } from '@tauri-apps/plugin-shell';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { useAppStore } from '../stores/appStore';
+import { renderSpecializedBlocks } from '../renderers/renderBlocks';
+import { documentWidthClass } from './documentLayout';
+import { isMarpDocument } from '../markdown/marp';
+
+const MarpView = lazy(() => import('./MarpView'));
 
 function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -11,7 +16,16 @@ export default function MarkdownView() {
   const renderedHTML = useAppStore((s) => s.renderedHTML);
   const searchQuery = useAppStore((s) => s.searchQuery);
   const currentMatch = useAppStore((s) => s.currentMatch);
+  const theme = useAppStore((s) => s.theme);
+  const readableLineLength = useAppStore((s) => s.readableLineLength);
+  const frontmatter = useAppStore((s) => s.frontmatter);
+  const rawMarkdown = useAppStore((s) => s.rawMarkdown);
+  const activeTabId = useAppStore((s) => s.activeTabId);
+  const [slidesMode, setSlidesMode] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const marpDocument = isMarpDocument(frontmatter);
+
+  useEffect(() => setSlidesMode(false), [activeTabId]);
 
   // Compute highlighted HTML from string (no DOM manipulation)
   const { displayHTML, matchCount } = useMemo(() => {
@@ -23,16 +37,8 @@ export default function MarkdownView() {
 
     // Split HTML into tags and text, only highlight in text segments
     const parts = renderedHTML.split(/(<[^>]*>)/);
-    // Rendered diagrams are SVG: a <mark> inside them is not HTML, it is a
-    // foreign element the renderer drops, taking the label with it. Skip them.
-    let svgDepth = 0;
     const highlighted = parts.map(part => {
-      if (part.startsWith('<')) {
-        if (/^<svg[\s>]/i.test(part)) svgDepth++;
-        else if (/^<\/svg\s*>/i.test(part)) svgDepth = Math.max(0, svgDepth - 1);
-        return part;
-      }
-      if (svgDepth > 0) return part;
+      if (part.startsWith('<')) return part;
       return part.replace(regex, (match) => {
         count++;
         const bg = count === currentMatch ? '#f97316' : '#fbbf24';
@@ -120,13 +126,40 @@ export default function MarkdownView() {
     });
   }, [displayHTML]);
 
+  // Render Mermaid + Vega diagrams on content or theme change. The cancelled
+  // flag is checked inside the renderers between async steps so a re-render
+  // (e.g. theme load completing right after content load on cold launch)
+  // can supersede an in-flight render without leaving half-rendered DOM.
+  useEffect(() => {
+    const container = contentRef.current;
+    if (!container) return;
+    let cancelled = false;
+    const isCancelled = () => cancelled;
+    renderSpecializedBlocks(container, theme, isCancelled).catch((e) => {
+      if (!cancelled) console.error('Specialized renderer failed', e);
+    });
+    return () => { cancelled = true; };
+  }, [displayHTML, theme]);
+
   return (
-    <div className="p-8 max-w-4xl mx-auto pb-32">
+    <div className={documentWidthClass(readableLineLength)}>
+      {marpDocument && (
+        <div className="marp-mode-toggle no-print" role="group" aria-label="Marp view mode">
+          <button className={!slidesMode ? 'active' : ''} onClick={() => setSlidesMode(false)}>Document</button>
+          <button className={slidesMode ? 'active' : ''} onClick={() => setSlidesMode(true)}>Slides</button>
+        </div>
+      )}
+      {marpDocument && slidesMode ? (
+        <Suspense fallback={<div className="marp-loading">Loading slides…</div>}>
+          <MarpView source={rawMarkdown} />
+        </Suspense>
+      ) : (
       <div
         ref={contentRef}
         className="markdown-body"
         dangerouslySetInnerHTML={{ __html: displayHTML }}
       />
+      )}
     </div>
   );
 }
