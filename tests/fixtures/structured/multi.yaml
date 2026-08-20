@@ -1,0 +1,6 @@
+kind: Service
+name: api
+---
+kind: Deployment
+name: api
+replicas: 3

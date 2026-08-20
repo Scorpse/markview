@@ -5,10 +5,13 @@ import { renderMarkdown } from '../markdown/renderMarkdown';
 export function useMarkdown() {
   const rawMarkdown = useAppStore((s) => s.rawMarkdown);
   const activeTabId = useAppStore((s) => s.activeTabId);
+  const fileKind = useAppStore((s) => s.fileKind);
   const pending = useRef(0);
 
   useEffect(() => {
-    if (rawMarkdown) {
+    // Structured files are rendered by their own viewer, so the Markdown
+    // pipeline never runs for them.
+    if (rawMarkdown && fileKind === 'markdown') {
       const id = ++pending.current;
       renderMarkdown(rawMarkdown).then((result) => {
         if (id !== pending.current) return; // stale
@@ -27,5 +30,5 @@ export function useMarkdown() {
         frontmatter: {},
       });
     }
-  }, [rawMarkdown, activeTabId]);
+  }, [rawMarkdown, activeTabId, fileKind]);
 }

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, lazy, Suspense } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { Menu } from 'lucide-react';
@@ -13,6 +13,9 @@ import MarkdownView from './components/MarkdownView';
 import WelcomePage from './components/WelcomePage';
 import SearchBar from './components/SearchBar';
 import SetDefaultModal from './components/SetDefaultModal';
+import { isSupportedPath } from './viewers/fileKind';
+
+const StructuredView = lazy(() => import('./viewers/StructuredView'));
 
 function App() {
   useTheme();
@@ -21,6 +24,7 @@ function App() {
 
   const {
     activeTabId,
+    fileKind,
     sidebarVisible,
     setSidebarVisible,
     setSearchVisible,
@@ -82,7 +86,7 @@ function App() {
 
     const unlistenFileAssoc = listen<string>('file-association-open', async (event) => {
       const path = event.payload;
-      if (path && path.toLowerCase().match(/\.(md|mdx|markdown)$/)) {
+      if (path && isSupportedPath(path)) {
         loadFile(path);
       }
     });
@@ -93,7 +97,7 @@ function App() {
         const paths = (event.payload as any).paths;
         if (paths && paths.length > 0) {
           const path = paths[0];
-          if (path.toLowerCase().match(/\.(md|mdx|markdown)$/)) {
+          if (isSupportedPath(path)) {
             loadFile(path);
           }
         }
@@ -212,7 +216,15 @@ function App() {
           {searchVisible && <SearchBar />}
 
           <div className="flex-1 overflow-y-auto w-full relative">
-            {hasActiveFile ? <MarkdownView loadFile={loadFile} /> : <WelcomePage loadFile={loadFile} />}
+            {!hasActiveFile ? (
+              <WelcomePage loadFile={loadFile} />
+            ) : fileKind === 'markdown' ? (
+              <MarkdownView loadFile={loadFile} />
+            ) : (
+              <Suspense fallback={<div className="p-8 opacity-70">Loading viewer…</div>}>
+                <StructuredView kind={fileKind} />
+              </Suspense>
+            )}
           </div>
         </main>
       </div>

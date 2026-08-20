@@ -41,3 +41,18 @@ A later pass closed the remaining plan items that were still open after the firs
 5. The readable-line-length boolean becomes a four-step width cycle (narrow, wide, extra wide, full). The stored preference migrates from the old boolean on first launch.
 
 The ordinary application chunk stays at 499.38 kB (176.91 kB gzip), unchanged from the previous fork build, because every addition is either lazy-loaded or pure CSS and path logic. Automated checks rise from 24 to 46.
+
+## Structured viewers (plan section 10)
+
+Phase G is implemented for JSON, YAML, JSONL, CSV/TSV and the read-only config formats. The shell, tabs, width control, theme tokens, recent files and file watching are reused; nothing here forks a second application architecture.
+
+1. `src/viewers/fileKind.ts` maps a path to a `FileKind`. Anything not positively recognised as structured stays Markdown, so the previous behaviour for unknown extensions is unchanged. `src-tauri/src/lib.rs` carries the same extension list for the CLI argument and single-instance paths, and `open_file_dialog` gained matching filters.
+2. `Tab` carries its `kind`, and `useMarkdown` only runs the Unified pipeline for Markdown tabs. Structured files never touch the Markdown parser.
+3. `src/viewers/parseStructured.ts` holds every parser as a pure, total function: a malformed file returns its error rather than throwing. The delimited parser implements RFC 4180 quoting, so embedded delimiters, newlines and doubled quotes survive. JSONL keeps the good records when one line is bad.
+4. `ValueTree` renders JSON and YAML as a collapsible tree with copy-value and copy-path controls. `DataTable` renders CSV and record-shaped JSONL with sticky headers and three-state sorting (ascending, descending, back to file order); numeric columns compare numerically.
+5. Large-file safety is a 5,000-row cap on tabular views, and the row count reports how many rows were left out rather than silently truncating.
+6. `StructuredView` is lazy-loaded from `App`, so none of this is in the startup path. The ordinary application chunk stays at 499.38 kB (176.91 kB gzip).
+
+Not done in this pass: MarkView does not register as the OS handler for these extensions, since that would take `.json` away from the user's editor. In-document search still targets the Markdown HTML only, so it does not yet search structured views.
+
+Automated checks rise from 46 to 93.

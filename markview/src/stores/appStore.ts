@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { DEFAULT_DOCUMENT_WIDTH, type DocumentWidth } from '../components/documentLayout';
+import { fileKindFor, type FileKind } from '../viewers/fileKind';
 
 export interface Heading {
   level: number;
@@ -11,6 +12,7 @@ export interface Tab {
   id: string;
   path: string;
   name: string;
+  kind: FileKind;
   rawMarkdown: string;
   renderedHTML: string;
   headings: Heading[];
@@ -25,6 +27,7 @@ export interface AppState {
 
   // Active tab mirrors (flat fields for easy consumption)
   currentFile: string | null;
+  fileKind: FileKind;
   rawMarkdown: string;
   renderedHTML: string;
   headings: Heading[];
@@ -66,10 +69,11 @@ let nextTabId = 1;
 
 function syncFromTab(tab: Tab | undefined) {
   if (!tab) {
-    return { currentFile: null, rawMarkdown: '', renderedHTML: '', headings: [], frontmatter: {} };
+    return { currentFile: null, fileKind: 'markdown' as FileKind, rawMarkdown: '', renderedHTML: '', headings: [], frontmatter: {} };
   }
   return {
     currentFile: tab.path,
+    fileKind: tab.kind,
     rawMarkdown: tab.rawMarkdown,
     renderedHTML: tab.renderedHTML,
     headings: tab.headings,
@@ -81,6 +85,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   tabs: [],
   activeTabId: null,
   currentFile: null,
+  fileKind: 'markdown',
   rawMarkdown: '',
   renderedHTML: '',
   headings: [],
@@ -101,6 +106,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const name = path.split(/[/\\]/).pop() || 'untitled';
     const newTab: Tab = {
       id, path, name,
+      kind: fileKindFor(path),
       rawMarkdown: content,
       renderedHTML: '',
       headings: [],
