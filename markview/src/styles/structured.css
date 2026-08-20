@@ -82,6 +82,16 @@
   tab-size: 2;
 }
 
+/* highlight.js ships a light GitHub theme globally, whose `.hljs` rule paints
+   an opaque white background. Let the themed container show through instead so
+   the source view is readable in dark mode; the token colours still apply. */
+.structured-raw code.hljs {
+  display: inline;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
 /* Collapsible value tree, shared by JSON and YAML. */
 .value-tree {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
