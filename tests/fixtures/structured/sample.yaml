@@ -1,0 +1,12 @@
+title: AI Platform Architecture
+services:
+  - name: api
+    replicas: 3
+    healthy: true
+  - name: worker
+    replicas: 10
+    healthy: false
+limits:
+  memory: 2Gi
+  cpu: "500m"
+notes: null

@@ -30,6 +30,21 @@ MarkView is a **reader**, not an editor. Open it when you want to:
 - **See LLM output rendered immediately** — paste a Claude / ChatGPT / Gemini reply that contains Mermaid diagrams or Vega-Lite charts and see them as visuals, not raw JSON / code blocks. No copy-pasting into a separate site.
 - **Read LLM-generated technical reports** — KaTeX math, GFM tables, syntax-highlighted code, and diagrams render in one consistent view.
 - **Open a `.md` file and just read it** — release notes, README files, docs from a cloned repo. No editor UI in the way.
+- **Glance at the data file sitting next to the doc** — JSON, YAML, JSONL, CSV/TSV and config files open in the same window with the same tabs.
+
+## Structured files
+
+Alongside Markdown, MarkView opens the data and config files that usually sit beside it. They reuse the same tabs, width control, themes and file watching — there is no second app hiding inside.
+
+| Format | Extensions | View |
+|---|---|---|
+| JSON | `.json` | Collapsible tree, copy value or path, source toggle |
+| YAML | `.yaml`, `.yml` | Collapsible tree, multi-document aware, source toggle |
+| JSONL | `.jsonl`, `.ndjson` | Sortable table when records share a shape, tree otherwise |
+| CSV / TSV | `.csv`, `.tsv` | Sortable table, sticky header, row count, source toggle |
+| Config | `.toml`, `.ini`, `.env`, `.conf`, `.properties` | Read-only highlighted source |
+
+Malformed input never blanks the window: the parse problem is reported above the content and the raw source stays readable. Tables cap at 5,000 rows and say how many were left out. MarkView does not register itself as the handler for these types — it stays the default app only for Markdown.
 
 If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.md/), [Typora](https://typora.io/), and [MarkText](https://github.com/marktext/marktext) are great. MarkView is intentionally read-only and lightweight — no account, no sync, no telemetry.
 

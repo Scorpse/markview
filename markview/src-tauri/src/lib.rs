@@ -4,9 +4,31 @@ use std::sync::Mutex;
 use tauri::Emitter;
 use tauri::Manager;
 
-fn is_markdown(path: &str) -> bool {
+/// Extensions the viewer can open. Markdown first, then the structured
+/// formats handled by the dedicated viewers. Kept in sync with
+/// `src/viewers/fileKind.ts`.
+const SUPPORTED_EXTENSIONS: &[&str] = &[
+    ".md",
+    ".mdx",
+    ".markdown",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".jsonl",
+    ".ndjson",
+    ".csv",
+    ".tsv",
+    ".toml",
+    ".ini",
+    ".env",
+    ".conf",
+    ".properties",
+];
+
+fn is_supported(path: &str) -> bool {
     let lower = path.to_lowercase();
-    lower.ends_with(".md") || lower.ends_with(".mdx") || lower.ends_with(".markdown")
+    let name = lower.rsplit(['/', '\\']).next().unwrap_or(&lower);
+    name == ".env" || SUPPORTED_EXTENSIONS.iter().any(|ext| lower.ends_with(ext))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -24,7 +46,7 @@ pub fn run() {
     if std::env::var("SNAP").is_err() {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
             // Second instance launched — find the .md path and send it to the existing window
-            if let Some(path) = argv.iter().skip(1).find(|a| is_markdown(a)) {
+            if let Some(path) = argv.iter().skip(1).find(|a| is_supported(a)) {
                 let _ = app.emit("file-association-open", path.clone());
             }
             // Focus the existing window
@@ -58,7 +80,7 @@ pub fn run() {
             let args: Vec<String> = std::env::args().collect();
             if args.len() > 1 {
                 let path = &args[1];
-                if is_markdown(path) {
+                if is_supported(path) {
                     let state = app.state::<commands::InitialFileState>();
                     *state.path.lock().unwrap() = Some(path.clone());
                 }

@@ -1,0 +1,11 @@
+{
+  "name": "markview",
+  "version": "1.1.0",
+  "nested": { "deep": { "deeper": [1, 2, 3] } },
+  "flags": { "readOnly": true, "telemetry": false, "maxRows": 5000 },
+  "contributors": [
+    { "name": "Ada", "commits": 120 },
+    { "name": "Grace", "commits": 98 }
+  ],
+  "empty": null
+}
