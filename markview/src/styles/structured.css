@@ -1,0 +1,253 @@
+/* Viewers for structured non-Markdown files (JSON, YAML, JSONL, CSV, config).
+   They reuse the document shell, width control and theme tokens rather than
+   introducing a second visual language. */
+
+.structured-view {
+  color: var(--text-color);
+  font-size: var(--base-font-size, 16px);
+}
+
+.structured-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.structured-kind {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.structured-mode {
+  display: inline-flex;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.structured-mode button {
+  font-size: 12px;
+  padding: 4px 12px;
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 0;
+  cursor: pointer;
+}
+
+.structured-mode button + button {
+  border-left: 1px solid var(--border-color);
+}
+
+.structured-mode button.active {
+  background: var(--tab-hover);
+  font-weight: 600;
+}
+
+.structured-empty {
+  opacity: 0.7;
+  font-style: italic;
+}
+
+.structured-problems {
+  margin: 0 0 16px;
+  padding: 10px 12px 10px 28px;
+  border: 1px solid rgba(192, 0, 0, 0.35);
+  border-left: 4px solid #c00;
+  border-radius: 4px;
+  color: var(--text-color);
+}
+
+.structured-problems li + li {
+  margin-top: 4px;
+}
+
+.structured-raw {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  border-radius: 6px;
+  background: var(--code-bg, rgba(127, 127, 127, 0.12));
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  line-height: 1.5;
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* highlight.js ships a light GitHub theme globally, whose `.hljs` rule paints
+   an opaque white background. Let the themed container show through instead so
+   the source view is readable in dark mode; the token colours still apply. */
+.structured-raw code.hljs {
+  display: inline;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+/* Collapsible value tree, shared by JSON and YAML. */
+.value-tree {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  line-height: 1.7;
+}
+
+.value-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: pre;
+  border-radius: 3px;
+}
+
+.value-tree-row:hover {
+  background: var(--tab-hover);
+}
+
+.value-tree-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-color);
+  cursor: pointer;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.value-tree-toggle:hover {
+  opacity: 1;
+}
+
+.value-tree-spacer {
+  display: inline-block;
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.value-key {
+  color: var(--link-color, #0969da);
+  font-weight: 600;
+}
+
+.value-punctuation {
+  opacity: 0.6;
+}
+
+.value-summary {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.value-string { color: #0a7d38; }
+.value-number { color: #b35900; }
+.value-boolean { color: #8250df; }
+.value-null { opacity: 0.6; }
+
+[data-theme='dark'] .value-string { color: #7ee787; }
+[data-theme='dark'] .value-number { color: #ffab70; }
+[data-theme='dark'] .value-boolean { color: #d2a8ff; }
+
+.value-tree-actions {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.value-tree-row:hover .value-tree-actions,
+.value-tree-actions:focus-within {
+  opacity: 1;
+}
+
+.value-tree-actions button {
+  font-size: 10px;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.value-tree-actions button:hover {
+  background: var(--tab-hover);
+}
+
+/* Sortable table, shared by CSV and record-shaped JSONL. */
+.data-table-scroll {
+  overflow: auto;
+  max-height: 70vh;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.data-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  font-size: 0.875em;
+}
+
+.data-table th,
+.data-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--sidebar-bg);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.data-table thead th button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-color);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.data-table tbody tr:hover td {
+  background: var(--tab-hover);
+}
+
+.data-table-rownum {
+  width: 1%;
+  text-align: right;
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+.data-table-footer {
+  margin: 8px 0 0;
+  font-size: 12px;
+  opacity: 0.7;
+}

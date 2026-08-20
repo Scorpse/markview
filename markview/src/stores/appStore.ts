@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { DEFAULT_DOCUMENT_WIDTH, type DocumentWidth } from '../components/documentLayout';
+import { fileKindFor, type FileKind } from '../viewers/fileKind';
 
 export interface Heading {
   level: number;
@@ -10,9 +12,11 @@ export interface Tab {
   id: string;
   path: string;
   name: string;
+  kind: FileKind;
   rawMarkdown: string;
   renderedHTML: string;
   headings: Heading[];
+  frontmatter: Record<string, unknown>;
   scrollTop: number;
 }
 
@@ -23,14 +27,17 @@ export interface AppState {
 
   // Active tab mirrors (flat fields for easy consumption)
   currentFile: string | null;
+  fileKind: FileKind;
   rawMarkdown: string;
   renderedHTML: string;
   headings: Heading[];
+  frontmatter: Record<string, unknown>;
 
   // App state
   recentFiles: string[];
   theme: 'light' | 'dark';
   fontSize: number;
+  documentWidth: DocumentWidth;
   sidebarVisible: boolean;
   searchVisible: boolean;
   searchQuery: string;
@@ -42,13 +49,14 @@ export interface AppState {
   addTab: (path: string, content: string) => string;
   closeTab: (tabId: string) => void;
   setActiveTab: (tabId: string) => void;
-  updateActiveTab: (updates: Partial<Pick<Tab, 'rawMarkdown' | 'renderedHTML' | 'headings' | 'scrollTop'>>) => void;
+  updateActiveTab: (updates: Partial<Pick<Tab, 'rawMarkdown' | 'renderedHTML' | 'headings' | 'frontmatter' | 'scrollTop'>>) => void;
 
   // Setters
   addRecentFile: (file: string) => void;
   setRecentFiles: (files: string[]) => void;
   setTheme: (theme: 'light' | 'dark') => void;
   setFontSize: (size: number) => void;
+  setDocumentWidth: (width: DocumentWidth) => void;
   setSidebarVisible: (visible: boolean) => void;
   setSearchVisible: (visible: boolean) => void;
   setSearchQuery: (query: string) => void;
@@ -61,13 +69,15 @@ let nextTabId = 1;
 
 function syncFromTab(tab: Tab | undefined) {
   if (!tab) {
-    return { currentFile: null, rawMarkdown: '', renderedHTML: '', headings: [] };
+    return { currentFile: null, fileKind: 'markdown' as FileKind, rawMarkdown: '', renderedHTML: '', headings: [], frontmatter: {} };
   }
   return {
     currentFile: tab.path,
+    fileKind: tab.kind,
     rawMarkdown: tab.rawMarkdown,
     renderedHTML: tab.renderedHTML,
     headings: tab.headings,
+    frontmatter: tab.frontmatter,
   };
 }
 
@@ -75,12 +85,15 @@ export const useAppStore = create<AppState>((set, get) => ({
   tabs: [],
   activeTabId: null,
   currentFile: null,
+  fileKind: 'markdown',
   rawMarkdown: '',
   renderedHTML: '',
   headings: [],
+  frontmatter: {},
   recentFiles: [],
   theme: 'light',
   fontSize: 16,
+  documentWidth: DEFAULT_DOCUMENT_WIDTH,
   sidebarVisible: true,
   searchVisible: false,
   searchQuery: '',
@@ -93,9 +106,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     const name = path.split(/[/\\]/).pop() || 'untitled';
     const newTab: Tab = {
       id, path, name,
+      kind: fileKindFor(path),
       rawMarkdown: content,
       renderedHTML: '',
       headings: [],
+      frontmatter: {},
       scrollTop: 0,
     };
     set({
@@ -154,6 +169,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (updates.rawMarkdown !== undefined) sync.rawMarkdown = updates.rawMarkdown;
     if (updates.renderedHTML !== undefined) sync.renderedHTML = updates.renderedHTML;
     if (updates.headings !== undefined) sync.headings = updates.headings;
+    if (updates.frontmatter !== undefined) sync.frontmatter = updates.frontmatter;
 
     set(sync);
   },
@@ -165,6 +181,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setRecentFiles: (files) => set({ recentFiles: files }),
   setTheme: (theme) => set({ theme }),
   setFontSize: (fontSize) => set({ fontSize }),
+  setDocumentWidth: (documentWidth) => set({ documentWidth }),
   setSidebarVisible: (visible) => set({ sidebarVisible: visible }),
   setSearchVisible: (visible) => set({ searchVisible: visible }),
   setSearchQuery: (query) => set({ searchQuery: query }),

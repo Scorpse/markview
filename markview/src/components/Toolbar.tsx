@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { FolderOpen, Moon, Sun, ZoomIn, ZoomOut, Search, Info } from 'lucide-react';
+import { FolderOpen, Moon, Sun, ZoomIn, ZoomOut, Search, Info, StretchHorizontal } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
+import { documentWidthLabel, nextDocumentWidth } from './documentLayout';
 import { tauriCommands } from '../utils/tauriCommands';
 import AboutModal from './AboutModal';
 
@@ -17,6 +18,8 @@ export default function Toolbar({ loadFile }: ToolbarProps) {
     setFontSize,
     setSearchVisible,
     searchVisible,
+    documentWidth,
+    setDocumentWidth,
   } = useAppStore();
 
   const handleOpenFile = async () => {
@@ -69,6 +72,15 @@ export default function Toolbar({ loadFile }: ToolbarProps) {
           <ZoomIn size={14} />
         </button>
       </div>
+
+      <button
+        onClick={() => setDocumentWidth(nextDocumentWidth(documentWidth))}
+        className={`p-1.5 rounded hover:bg-[var(--tab-hover)] text-[var(--text-color)] ${documentWidth !== 'narrow' ? 'bg-[var(--tab-hover)]' : ''}`}
+        title={`Document width: ${documentWidthLabel(documentWidth)} — click for ${documentWidthLabel(nextDocumentWidth(documentWidth))}`}
+        aria-label={`Document width: ${documentWidthLabel(documentWidth)}`}
+      >
+        <StretchHorizontal size={16} />
+      </button>
 
       <button
         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}

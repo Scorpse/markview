@@ -18,7 +18,13 @@ pub async fn read_file(path: String) -> Result<String, String> {
 #[tauri::command]
 pub async fn open_file_dialog(app: AppHandle) -> Result<Option<FileResult>, String> {
     let (tx, rx) = std::sync::mpsc::channel();
-    app.dialog().file().add_filter("Markdown", &["md", "mdx", "markdown"]).pick_file(move |file_path| {
+    app.dialog()
+        .file()
+        .add_filter("All supported", &["md", "mdx", "markdown", "json", "yaml", "yml", "jsonl", "ndjson", "csv", "tsv", "toml", "ini", "env", "conf", "properties"])
+        .add_filter("Markdown", &["md", "mdx", "markdown"])
+        .add_filter("Data", &["json", "yaml", "yml", "jsonl", "ndjson", "csv", "tsv"])
+        .add_filter("Config", &["toml", "ini", "env", "conf", "properties"])
+        .pick_file(move |file_path| {
         tx.send(file_path).unwrap();
     });
 

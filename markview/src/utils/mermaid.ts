@@ -34,6 +34,17 @@ async function getMermaid(theme: 'light' | 'dark'): Promise<MermaidModule> {
   return m;
 }
 
+export async function renderMermaidSource(source: string, theme: 'light' | 'dark'): Promise<HTMLElement> {
+  const mermaid = await getMermaid(theme);
+  const id = `mermaid-${Date.now()}-${++renderCounter}`;
+  const { svg, bindFunctions } = await mermaid.render(id, source);
+  const wrapper = document.createElement('div');
+  wrapper.className = 'mermaid-diagram';
+  wrapper.innerHTML = svg;
+  if (bindFunctions) bindFunctions(wrapper);
+  return wrapper;
+}
+
 /**
  * Scan the container for <code class="language-mermaid"> blocks and replace
  * their parent <pre> with rendered SVG. Safe to call multiple times —
