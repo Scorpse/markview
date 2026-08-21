@@ -191,10 +191,17 @@
   height: 420px;
 }
 
-/* markmap draws node labels with its own default fill, which is unreadable on
-   the dark theme's background. Bind them to the theme's text colour instead. */
+/* markmap draws node labels with its own default colour, which is unreadable on
+   the dark theme's background. Labels are HTML inside <foreignObject>, so they
+   take `color` rather than `fill`; cover both so either markup shape is bound to
+   the theme. */
 .markdown-body .markmap-diagram text {
   fill: var(--text-color);
+}
+
+.markdown-body .markmap-diagram foreignObject,
+.markdown-body .markmap-diagram foreignObject * {
+  color: var(--text-color);
 }
 
 .markdown-body .specialized-renderer-error {

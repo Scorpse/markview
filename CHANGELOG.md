@@ -3,9 +3,10 @@
 All notable changes to this fork are documented here. This project follows
 [Semantic Versioning](https://semver.org/) and continues MarkView's version line.
 
-## [1.2.0] — 2026-08-21
+## [1.3.0] — unreleased
 
-First release of the community continuation. Upstream
+First release of the community continuation. Opens a new minor line carrying every fix and
+addition below. Upstream
 [scos-lab/markview](https://github.com/scos-lab/markview) became feature-frozen in August 2026;
 this fork carries the project forward under the same MIT license.
 

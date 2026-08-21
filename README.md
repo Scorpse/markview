@@ -61,19 +61,19 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 | Format | Link |
 |---------|------|
-| Installer (NSIS) | [MarkView_1.2.0_x64-setup.exe](https://github.com/Scorpse/markview/releases/latest) |
-| Installer (MSI) | [MarkView_1.2.0_x64_en-US.msi](https://github.com/Scorpse/markview/releases/latest) |
+| Installer (NSIS) | [MarkView_1.3.0_x64-setup.exe](https://github.com/Scorpse/markview/releases/latest) |
+| Installer (MSI) | [MarkView_1.3.0_x64_en-US.msi](https://github.com/Scorpse/markview/releases/latest) |
 
 > **Note:** Windows SmartScreen will warn about these files because they are not code-signed. To bypass: click **"More info"** → **"Run anyway"**. Alternatively, right-click the file → **Properties** → check **"Unblock"** → OK.
 
 ### Linux
 
-Linux builds are not yet published from this fork — the 1.2.0 release ships Windows installers
-only. The Linux packaging in `markview/snap` and `markview/flatpak` is inherited and still carries
-upstream's `io.github.scos-lab.MarkView` app id, so it needs re-identifying before it can be
-published from here.
+Linux builds are planned for the 1.3.0 release and will be published as GitHub Releases. This
+fork does not use the Microsoft Store, Snap Store or Flathub — the inherited packaging in
+`markview/snap` and `markview/flatpak` still carries upstream's `io.github.scos-lab.MarkView`
+app id and would need re-identifying before it could be published from here.
 
-Upstream's final Linux artifacts remain available and working at version 1.0.5:
+Until then, upstream's final Linux artifacts remain available and working at version 1.0.5:
 
 | Format | Link | Notes |
 |--------|------|-------|
@@ -81,7 +81,7 @@ Upstream's final Linux artifacts remain available and working at version 1.0.5:
 | `.AppImage` (1.0.5) | [MarkView-1.0.5-amd64.AppImage](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView-1.0.5-amd64.AppImage) | Any distro with `libfuse2`, self-contained |
 
 > The Microsoft Store, Snap and Flathub listings belong to the upstream project, are frozen at
-> 1.0.5, and are not updated by this fork.
+> 1.0.5, and are not updated by this fork. Releases here are published through GitHub Releases only.
 
 ```bash
 # .deb install
