@@ -88,6 +88,19 @@ describe('sanitizeSvg against real Mermaid output', () => {
     expect(svg.textContent).toContain('End');
   }, 120000);
 
+  // The HTML parser applies an adjustment table to foreign-content attributes.
+  // Mermaid's arrowheads are <marker> elements whose camelCase attributes must
+  // come through intact, or edges render without arrows.
+  it('preserves camelCase marker attributes in real Mermaid output', async () => {
+    const svgText = await renderMermaid('t-marker', 'flowchart LR\n  A --> B');
+    const svg = sanitizeSvg(svgText);
+    const marker = svg.querySelector('marker');
+    expect(marker).not.toBeNull();
+    expect(marker?.getAttribute('markerWidth')).not.toBeNull();
+    expect(marker?.getAttribute('markerHeight')).not.toBeNull();
+    expect(marker?.getAttribute('refX')).not.toBeNull();
+  }, 120000);
+
   it('survives an ordinary flowchart with no HTML in its labels', async () => {
     const svgText = await renderMermaid('t-plain', 'flowchart LR\n  UI --> API\n  API --> DB[(Postgres)]');
     const svg = sanitizeSvg(svgText);

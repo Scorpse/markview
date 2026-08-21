@@ -41,6 +41,12 @@ describe('Markdown HTML security', () => {
     expect(html).toContain('src="data:image/png;base64,iVBORw0KGgo="');
   });
 
+  it('leaves link protocols untouched when widening image protocols', async () => {
+    const html = String(await render('[a](https://example.com) [b](mailto:x@example.com)'));
+    expect(html).toContain('href="https://example.com"');
+    expect(html).toContain('href="mailto:x@example.com"');
+  });
+
   it('still refuses a javascript: URL on an image', async () => {
     const html = String(await render('<img src="javascript:alert(1)">'));
     expect(html).not.toContain('javascript:');
