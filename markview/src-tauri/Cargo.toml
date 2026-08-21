@@ -20,8 +20,11 @@ tauri-build = { version = "2", features = [] }
 [features]
 # enabled by `tauri build` for production; disabled by `tauri dev` so the
 # devUrl is used. Without this, release builds also try to load devUrl.
-default = ["custom-protocol"]
+default = ["custom-protocol", "devtools"]
 custom-protocol = ["tauri/custom-protocol"]
+# Gate for the MARKVIEW_DEVTOOLS env var in setup(); the inspector itself is
+# always compiled in via the tauri "devtools" feature below.
+devtools = []
 
 [dependencies]
 tauri = { version = "2", features = ["devtools"] }

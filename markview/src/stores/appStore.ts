@@ -133,8 +133,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   setActiveTab: (tabId) => {
-    // Save current scroll position before switching
-    const { tabs } = get();
+    const { tabs, activeTabId } = get();
+    // Clicking the already-active tab must not touch the store — a no-op set()
+    // still re-renders subscribers and can wipe rendered diagrams from the DOM.
+    if (activeTabId === tabId) return;
     const activeTab = tabs.find(t => t.id === tabId);
     set({
       activeTabId: tabId,
