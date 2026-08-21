@@ -7,9 +7,12 @@ import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 import { visit } from 'unist-util-visit';
 import { useAppStore, Heading } from '../stores/appStore';
 import { renderDiagramsInHtml } from '../utils/diagrams';
+import { markdownSanitizeSchema } from '../utils/markdownSecurity';
 
 // Build processor once at module level
 let headingsCollector: Heading[] = [];
@@ -44,6 +47,8 @@ const processor = unified()
     });
   })
   .use(remarkRehype, { allowDangerousHtml: true })
+  .use(rehypeRaw)
+  .use(rehypeSanitize, markdownSanitizeSchema)
   .use(rehypeHighlight, { plainText: ['mermaid', 'vega-lite', 'vega'] })
   .use(rehypeKatex)
   .use(rehypeStringify, { allowDangerousHtml: true });

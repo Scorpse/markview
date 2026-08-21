@@ -9,21 +9,16 @@
 
 import { renderMermaidToSvg } from './mermaid';
 import { renderVegaToSvg } from './vega';
+import { renderRendererError } from './rendererError';
+import { sanitizeSvg } from './sanitizeSvg';
 
 const BLOCK_SELECTOR =
   'code.language-mermaid, code.language-vega-lite, code.language-vega';
 
-function errorBlock(label: string, kind: string, source: string, msg: string) {
-  const pre = document.createElement('pre');
-  pre.className = `${kind}-error`;
-  pre.textContent = `${label} render error:\n${msg}\n\nSource:\n${source}`;
-  return pre;
-}
-
 function wrap(className: string, svg: string) {
   const div = document.createElement('div');
   div.className = className;
-  div.innerHTML = svg;
+  div.replaceChildren(sanitizeSvg(svg));
   return div;
 }
 
@@ -55,7 +50,9 @@ export async function renderDiagramsInHtml(
         host.replaceWith(wrap('mermaid-diagram', await renderMermaidToSvg(source, theme)));
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        host.replaceWith(errorBlock('Mermaid', 'mermaid', source, msg));
+        renderRendererError(host, {
+          rendererName: 'Mermaid', message: msg, source, className: 'mermaid-error',
+        });
       }
     } else {
       const mode = codeEl.classList.contains('language-vega') ? 'vega' : 'vega-lite';
@@ -63,7 +60,9 @@ export async function renderDiagramsInHtml(
         host.replaceWith(wrap('vega-chart', await renderVegaToSvg(source, mode, theme)));
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
-        host.replaceWith(errorBlock('Vega', 'vega', source, msg));
+        renderRendererError(host, {
+          rendererName: 'Vega', message: msg, source, className: 'vega-error',
+        });
       }
     }
   }
