@@ -1,12 +1,29 @@
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const BLOCKED_ELEMENTS = 'script, iframe, object, embed';
 
+/**
+ * Take renderer-produced SVG text and return a DOM element with active content
+ * removed.
+ *
+ * Parsing happens in HTML mode via a `<template>`, whose content is inert: no
+ * script runs and no resource is fetched while the tree is built. An XML parse
+ * would be stricter but cannot read real renderer output — Mermaid serialises
+ * `htmlLabels` inside `<foreignObject>` as HTML, so a node label containing a
+ * line break emits a void `<br>` and fails an XML parse outright.
+ *
+ * Strictness of the parser is not what makes this safe: blocked elements and
+ * `on*` / `javascript:` attributes are stripped from the parsed tree below.
+ */
 export function sanitizeSvg(svgText: string): SVGSVGElement {
-  const parsed = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-  const svg = parsed.documentElement;
+  const template = document.createElement('template');
+  template.innerHTML = svgText;
 
-  if (svg.localName !== 'svg' || parsed.querySelector('parsererror')) {
-    throw new Error('Renderer returned invalid SVG');
-  }
+  // Matched on namespace rather than tag name, so an HTML element merely
+  // named "svg" cannot pose as the root.
+  const svg = Array.from(template.content.children).find(
+    (element) => element.namespaceURI === SVG_NAMESPACE && element.localName === 'svg',
+  );
+  if (!svg) throw new Error('Renderer returned invalid SVG');
 
   svg.querySelectorAll(BLOCKED_ELEMENTS).forEach((element) => element.remove());
 
