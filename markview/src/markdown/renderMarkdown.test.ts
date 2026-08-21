@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { describe, expect, it } from 'vitest';
 import { renderMarkdown } from './renderMarkdown';
 
@@ -39,16 +41,6 @@ describe('renderMarkdown', () => {
     expect(result.html).toContain('data-lucide-icon="database"');
     expect(result.html).toContain('aria-label="database icon"');
     expect(result.html).toContain(':lucide-not-real:');
-  });
-
-  it('sanitizes dangerous raw HTML while retaining safe markup', async () => {
-    const source = '<script>alert(1)</script><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">bad</a><iframe src="file:///secret"></iframe><kbd>Ctrl</kbd>';
-    const result = await renderMarkdown(source);
-    expect(result.html).not.toContain('<script');
-    expect(result.html).not.toContain('onerror');
-    expect(result.html).not.toContain('javascript:');
-    expect(result.html).not.toContain('<iframe');
-    expect(result.html).toContain('<kbd>Ctrl</kbd>');
   });
 
   it('collects stable unique heading ids', async () => {

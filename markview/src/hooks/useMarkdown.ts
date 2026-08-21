@@ -6,6 +6,7 @@ export function useMarkdown() {
   const rawMarkdown = useAppStore((s) => s.rawMarkdown);
   const activeTabId = useAppStore((s) => s.activeTabId);
   const fileKind = useAppStore((s) => s.fileKind);
+  const theme = useAppStore((s) => s.theme);
   const pending = useRef(0);
 
   useEffect(() => {
@@ -13,7 +14,7 @@ export function useMarkdown() {
     // pipeline never runs for them.
     if (rawMarkdown && fileKind === 'markdown') {
       const id = ++pending.current;
-      renderMarkdown(rawMarkdown).then((result) => {
+      renderMarkdown(rawMarkdown, theme).then((result) => {
         if (id !== pending.current) return; // stale
         useAppStore.getState().updateActiveTab({
           renderedHTML: result.html,
@@ -30,5 +31,5 @@ export function useMarkdown() {
         frontmatter: {},
       });
     }
-  }, [rawMarkdown, activeTabId, fileKind]);
+  }, [rawMarkdown, activeTabId, fileKind, theme]);
 }

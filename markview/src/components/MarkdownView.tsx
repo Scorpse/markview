@@ -3,7 +3,6 @@ import { open } from '@tauri-apps/plugin-shell';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { useAppStore } from '../stores/appStore';
 import { renderSpecializedBlocks } from '../renderers/renderBlocks';
-import { documentWidthClass } from './documentLayout';
 import { isMarpDocument } from '../markdown/marp';
 import { isAbsolutePath, isMarkdownPath, resolveRelativePath, stripLinkSuffix } from '../utils/resolvePath';
 
@@ -36,7 +35,6 @@ export default function MarkdownView({ loadFile }: MarkdownViewProps) {
   const searchQuery = useAppStore((s) => s.searchQuery);
   const currentMatch = useAppStore((s) => s.currentMatch);
   const theme = useAppStore((s) => s.theme);
-  const documentWidth = useAppStore((s) => s.documentWidth);
   const currentFile = useAppStore((s) => s.currentFile);
   const frontmatter = useAppStore((s) => s.frontmatter);
   const rawMarkdown = useAppStore((s) => s.rawMarkdown);
@@ -219,7 +217,7 @@ export default function MarkdownView({ loadFile }: MarkdownViewProps) {
   }, [displayHTML, theme]);
 
   return (
-    <div className={documentWidthClass(documentWidth)}>
+    <div className="p-8 max-w-4xl mx-auto pb-32">
       {marpDocument && (
         <div className="marp-mode-toggle no-print" role="group" aria-label="Marp view mode">
           <button className={!slidesMode ? 'active' : ''} onClick={() => setSlidesMode(false)}>Document</button>

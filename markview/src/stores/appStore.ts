@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { DEFAULT_DOCUMENT_WIDTH, type DocumentWidth } from '../components/documentLayout';
 import { fileKindFor, type FileKind } from '../viewers/fileKind';
 
 export interface Heading {
@@ -37,7 +36,6 @@ export interface AppState {
   recentFiles: string[];
   theme: 'light' | 'dark';
   fontSize: number;
-  documentWidth: DocumentWidth;
   sidebarVisible: boolean;
   searchVisible: boolean;
   searchQuery: string;
@@ -56,7 +54,6 @@ export interface AppState {
   setRecentFiles: (files: string[]) => void;
   setTheme: (theme: 'light' | 'dark') => void;
   setFontSize: (size: number) => void;
-  setDocumentWidth: (width: DocumentWidth) => void;
   setSidebarVisible: (visible: boolean) => void;
   setSearchVisible: (visible: boolean) => void;
   setSearchQuery: (query: string) => void;
@@ -93,7 +90,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   recentFiles: [],
   theme: 'light',
   fontSize: 16,
-  documentWidth: DEFAULT_DOCUMENT_WIDTH,
   sidebarVisible: true,
   searchVisible: false,
   searchQuery: '',
@@ -183,7 +179,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   setRecentFiles: (files) => set({ recentFiles: files }),
   setTheme: (theme) => set({ theme }),
   setFontSize: (fontSize) => set({ fontSize }),
-  setDocumentWidth: (documentWidth) => set({ documentWidth }),
   setSidebarVisible: (visible) => set({ sidebarVisible: visible }),
   setSearchVisible: (visible) => set({ searchVisible: visible }),
   setSearchQuery: (query) => set({ searchQuery: query }),

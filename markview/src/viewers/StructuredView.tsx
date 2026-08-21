@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
-import { documentWidthClass } from '../components/documentLayout';
 import { configLanguageFor, delimiterFor, type FileKind } from './fileKind';
 import {
   isTabular,
@@ -101,7 +100,6 @@ function useYaml(source: string, enabled: boolean) {
 export default function StructuredView({ kind }: StructuredViewProps) {
   const source = useAppStore((s) => s.rawMarkdown);
   const currentFile = useAppStore((s) => s.currentFile) ?? '';
-  const documentWidth = useAppStore((s) => s.documentWidth);
   const activeTabId = useAppStore((s) => s.activeTabId);
   const [mode, setMode] = useState<Mode>('view');
 
@@ -184,7 +182,7 @@ export default function StructuredView({ kind }: StructuredViewProps) {
   };
 
   return (
-    <div className={documentWidthClass(documentWidth)}>
+    <div className="p-8 max-w-4xl mx-auto pb-32">
       <div className="structured-view">
         <div className="structured-header no-print">
           <span className="structured-kind">{kind.toUpperCase()}</span>

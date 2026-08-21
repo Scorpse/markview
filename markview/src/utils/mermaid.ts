@@ -36,17 +36,6 @@ async function getMermaid(theme: 'light' | 'dark'): Promise<MermaidModule> {
   return m;
 }
 
-export async function renderMermaidSource(source: string, theme: 'light' | 'dark'): Promise<HTMLElement> {
-  const mermaid = await getMermaid(theme);
-  const id = `mermaid-${Date.now()}-${++renderCounter}`;
-  const { svg, bindFunctions } = await mermaid.render(id, source);
-  const wrapper = document.createElement('div');
-  wrapper.className = 'mermaid-diagram';
-  wrapper.innerHTML = svg;
-  if (bindFunctions) bindFunctions(wrapper);
-  return wrapper;
-}
-
 /**
  * Render one Mermaid source to an SVG string. Throws on invalid syntax so the
  * caller can substitute an error block.

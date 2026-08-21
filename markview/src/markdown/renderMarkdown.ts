@@ -7,9 +7,6 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkSupersub from 'remark-supersub';
 import { remarkDefinitionList, defListHastHandlers } from 'remark-definition-list';
 import remarkRehype from 'remark-rehype';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
-import type { Schema } from 'hast-util-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import rehypeStringify from 'rehype-stringify';
@@ -19,30 +16,13 @@ import { rehypeAlerts } from './plugins/rehypeAlerts';
 import { remarkFrontmatterData } from './plugins/remarkFrontmatterData';
 import { remarkLucideIcons } from './plugins/remarkLucideIcons';
 import { specializedLanguages } from '../renderers/registry';
+import { renderDiagramsInHtml } from '../utils/diagrams';
 
 export interface RenderedMarkdown {
   html: string;
   headings: Heading[];
   frontmatter: Record<string, unknown>;
 }
-
-const sanitizeSchema: Schema = {
-  ...defaultSchema,
-  clobberPrefix: '',
-  tagNames: [...(defaultSchema.tagNames ?? []), 'kbd', 'svg', 'path', 'circle', 'line', 'polyline', 'polygon', 'rect'],
-  attributes: {
-    ...defaultSchema.attributes,
-    '*': [...(defaultSchema.attributes?.['*'] ?? []), 'className', 'role', 'ariaLabel', 'ariaHidden', /^data-[\w-]+$/],
-    code: [...(defaultSchema.attributes?.code ?? []), ['className', /^language-[\w-]+$/, /^hljs(?:-[\w-]+)?$/]],
-    svg: ['xmlns', 'width', 'height', 'viewBox', 'fill', 'stroke', 'strokeWidth', 'strokeLinecap', 'strokeLinejoin', 'className', 'role', 'ariaLabel', 'dataLucideIcon'],
-    path: ['d', 'fill', 'stroke'],
-    circle: ['cx', 'cy', 'r', 'fill', 'stroke'],
-    line: ['x1', 'x2', 'y1', 'y2', 'stroke'],
-    polyline: ['points', 'fill', 'stroke'],
-    polygon: ['points', 'fill', 'stroke'],
-    rect: ['x', 'y', 'width', 'height', 'rx', 'ry', 'fill', 'stroke'],
-  },
-} as Schema;
 
 function headingCollector(headings: Heading[]) {
   return () => (tree: any) => {
@@ -68,7 +48,10 @@ function headingCollector(headings: Heading[]) {
   };
 }
 
-export async function renderMarkdown(source: string): Promise<RenderedMarkdown> {
+export async function renderMarkdown(
+  source: string,
+  theme: 'light' | 'dark' = 'light',
+): Promise<RenderedMarkdown> {
   const headings: Heading[] = [];
   const processor = unified()
     .use(remarkParse)
@@ -82,16 +65,14 @@ export async function renderMarkdown(source: string): Promise<RenderedMarkdown> 
     .use(remarkLucideIcons)
     .use(headingCollector(headings))
     .use(remarkRehype, { allowDangerousHtml: true, handlers: defListHastHandlers })
-    .use(rehypeRaw)
     .use(rehypeAlerts)
-    .use(rehypeSanitize, sanitizeSchema)
-    .use(rehypeHighlight, { plainText: specializedLanguages })
+    .use(rehypeHighlight, { plainText: ['mermaid', 'vega', 'vega-lite', ...specializedLanguages] })
     .use(rehypeKatex)
-    .use(rehypeStringify);
+    .use(rehypeStringify, { allowDangerousHtml: true });
 
   const file = await processor.process(source);
   return {
-    html: String(file),
+    html: await renderDiagramsInHtml(String(file), theme),
     headings,
     frontmatter: (file.data.frontmatter as Record<string, unknown>) ?? {},
   };

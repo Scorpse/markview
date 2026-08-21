@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { load, Store } from '@tauri-apps/plugin-store';
 import { useAppStore } from '../stores/appStore';
-import { documentWidthFromLegacyPreference, isDocumentWidth } from '../components/documentLayout';
 
 // Single store instance, loaded once
 let storePromise: Promise<Store> | null = null;
@@ -13,7 +12,7 @@ function getStore() {
 }
 
 export function useTheme() {
-  const { theme, setTheme, fontSize, setFontSize, documentWidth, setDocumentWidth, setRecentFiles, setShowSetDefault } = useAppStore();
+  const { theme, setTheme, fontSize, setFontSize, setRecentFiles, setShowSetDefault } = useAppStore();
 
   useEffect(() => {
     async function initStore() {
@@ -28,17 +27,6 @@ export function useTheme() {
         const savedFontSize = await store.get<{value: number}>('fontSize');
         if (savedFontSize && typeof savedFontSize.value === 'number') {
           setFontSize(savedFontSize.value);
-        }
-
-        const savedDocumentWidth = await store.get<{value: string}>('documentWidth');
-        if (savedDocumentWidth && isDocumentWidth(savedDocumentWidth.value)) {
-          setDocumentWidth(savedDocumentWidth.value);
-        } else {
-          // Migrate the pre-cycle readable-line-length boolean.
-          const legacy = await store.get<{value: boolean}>('readableLineLength');
-          if (legacy && typeof legacy.value === 'boolean') {
-            setDocumentWidth(documentWidthFromLegacyPreference(legacy.value));
-          }
         }
 
         const savedRecent = await store.get<{value: string[]}>('recentFiles');
@@ -80,13 +68,6 @@ export function useTheme() {
       await store.save();
     }).catch(() => {});
   }, [fontSize]);
-
-  useEffect(() => {
-    getStore().then(async (store) => {
-      await store.set('documentWidth', { value: documentWidth });
-      await store.save();
-    }).catch(() => {});
-  }, [documentWidth]);
 }
 
 export async function saveHasPromptedDefault() {

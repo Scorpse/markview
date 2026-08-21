@@ -3,9 +3,6 @@ import { getRenderer, specializedLanguages } from './registry';
 
 describe('renderer registry', () => {
   it.each([
-    ['mermaid', 'mermaid'],
-    ['vega', 'vega'],
-    ['vega-lite', 'vega'],
     ['dot', 'graphviz'],
     ['graphviz', 'graphviz'],
     ['d2', 'd2'],
@@ -21,6 +18,6 @@ describe('renderer registry', () => {
   });
 
   it('publishes every alias for the syntax-highlighting exclusion list', () => {
-    expect(specializedLanguages).toEqual(['mermaid', 'vega', 'vega-lite', 'dot', 'graphviz', 'd2', 'markmap', 'wavedrom']);
+    expect(specializedLanguages).toEqual(['dot', 'graphviz', 'd2', 'markmap', 'wavedrom']);
   });
 });
