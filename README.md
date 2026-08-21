@@ -1,5 +1,13 @@
 # MarkView
 
+> [!IMPORTANT]
+> **Project status (August 2026): MarkView is feature-frozen and no longer under active development.**
+> It will receive **no further updates or releases**, but the project **remains open source** under the
+> MIT license — the code stays available and existing releases keep working as-is.
+> Active development has moved to its successor, **[Rho MD](https://rho.md)** — a Markdown reader +
+> notebook built on everything we learned here, with interactive documents, a document library, and
+> Android support. Issues and pull requests on this repository may receive limited or no attention.
+
 [![Latest release](https://img.shields.io/github/v/release/scos-lab/markview?label=latest&color=blue)](https://github.com/scos-lab/markview/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
