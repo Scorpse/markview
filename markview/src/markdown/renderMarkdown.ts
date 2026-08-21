@@ -29,6 +29,14 @@ export interface RenderedMarkdown {
 const sanitizeSchema: Schema = {
   ...defaultSchema,
   clobberPrefix: '',
+  // The default schema allows only http/https for `src`, which drops inline
+  // base64 images. MarkView renders those (MarkdownView leaves `data:` URLs
+  // alone rather than routing them through the asset protocol), and an image
+  // loaded from a data URL cannot execute script.
+  protocols: {
+    ...defaultSchema.protocols,
+    src: [...(defaultSchema.protocols?.src ?? []), 'data'],
+  },
   tagNames: [...(defaultSchema.tagNames ?? []), 'kbd', 'svg', 'path', 'circle', 'line', 'polyline', 'polygon', 'rect'],
   attributes: {
     ...defaultSchema.attributes,

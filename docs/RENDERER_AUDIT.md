@@ -56,3 +56,15 @@ Phase G is implemented for JSON, YAML, JSONL, CSV/TSV and the read-only config f
 Not done in this pass: MarkView does not register as the OS handler for these extensions, since that would take `.json` away from the user's editor. In-document search still targets the Markdown HTML only, so it does not yet search structured views.
 
 Automated checks rise from 46 to 93.
+
+## SVG sanitiser parse mode
+
+`safeSvgElement` originally parsed renderer output with `DOMParser(..., 'image/svg+xml')`. That is a strict XML parse, and it cannot read real Mermaid output: Mermaid serialises `htmlLabels` inside `<foreignObject>` as HTML, so a node label containing a line break emits a void `<br>`. Rendering `flowchart TD` with `A[Line1<br/>Line2]` through the actual library produces `<p>Line1<br>Line2</p>`, which fails the XML parse and replaced the whole diagram with a render error. Line breaks in node labels are among the most common things an LLM writes into Mermaid, so this affected ordinary documents.
+
+Parsing now happens in HTML mode through a `<template>`, whose content is inert: no script executes and no resource is fetched while the tree is built. Sanitisation never depended on the parser being strict — blocked elements and `on*` / `javascript:` attributes are stripped from the parsed tree afterwards, and that pass is unchanged. The root element is matched on its SVG namespace rather than its tag name, so an HTML element merely named `svg` cannot pose as one.
+
+The regression is covered two ways: a fast unit test carrying the exact `foreignObject` shape, and a test that renders through the real Mermaid library and asserts the sanitiser accepts the result. The second one guards its own premise by first asserting the output still contains a void `<br>`, so it cannot silently stop covering the case if Mermaid changes its serialisation. Both tests fail against the previous XML-parse implementation; the six sanitisation tests pass under both, so the fix does not weaken filtering.
+
+Separately, the sanitiser now allows the `data:` protocol for `src`. The default schema permits only `http`/`https`, which silently dropped inline base64 images even though `MarkdownView` deliberately passes `data:` URLs through untouched. An image loaded from a data URL cannot execute script. `javascript:` remains rejected.
+
+Automated checks rise from 93 to 102.

@@ -51,6 +51,16 @@ describe('renderMarkdown', () => {
     expect(result.html).toContain('<kbd>Ctrl</kbd>');
   });
 
+  it('keeps inline base64 images, which MarkView renders', async () => {
+    const result = await renderMarkdown('![alt](data:image/png;base64,iVBORw0KGgo=)');
+    expect(result.html).toContain('src="data:image/png;base64,iVBORw0KGgo="');
+  });
+
+  it('still refuses a javascript: URL on an image', async () => {
+    const result = await renderMarkdown('<img src="javascript:alert(1)">');
+    expect(result.html).not.toContain('javascript:');
+  });
+
   it('collects stable unique heading ids', async () => {
     const result = await renderMarkdown('# Repeat\n\n## Repeat\n\n# 中文');
     expect(result.headings).toEqual([
