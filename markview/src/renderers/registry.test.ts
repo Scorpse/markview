@@ -3,9 +3,6 @@ import { getRenderer, specializedLanguages } from './registry';
 
 describe('renderer registry', () => {
   it.each([
-    ['mermaid', 'mermaid'],
-    ['vega', 'vega'],
-    ['vega-lite', 'vega'],
     ['dot', 'graphviz'],
     ['graphviz', 'graphviz'],
     ['d2', 'd2'],
@@ -15,12 +12,18 @@ describe('renderer registry', () => {
     expect(getRenderer(language)?.id).toBe(id);
   });
 
+  it('leaves Mermaid and Vega to the Markdown pipeline', () => {
+    expect(getRenderer('mermaid')).toBeUndefined();
+    expect(getRenderer('vega')).toBeUndefined();
+    expect(getRenderer('vega-lite')).toBeUndefined();
+  });
+
   it('leaves ordinary and unknown code alone', () => {
     expect(getRenderer('typescript')).toBeUndefined();
     expect(getRenderer('')).toBeUndefined();
   });
 
   it('publishes every alias for the syntax-highlighting exclusion list', () => {
-    expect(specializedLanguages).toEqual(['mermaid', 'vega', 'vega-lite', 'dot', 'graphviz', 'd2', 'markmap', 'wavedrom']);
+    expect(specializedLanguages).toEqual(['dot', 'graphviz', 'd2', 'markmap', 'wavedrom']);
   });
 });
