@@ -2,7 +2,6 @@ import { lazy, Suspense, useEffect, useRef, useMemo, useState } from 'react';
 import { open } from '@tauri-apps/plugin-shell';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { useAppStore } from '../stores/appStore';
-import { renderSpecializedBlocks } from '../renderers/renderBlocks';
 import { documentWidthClass } from './documentLayout';
 import { isMarpDocument } from '../markdown/marp';
 import { isAbsolutePath, isMarkdownPath, resolveRelativePath, stripLinkSuffix } from '../utils/resolvePath';
@@ -35,7 +34,6 @@ export default function MarkdownView({ loadFile }: MarkdownViewProps) {
   const renderedHTML = useAppStore((s) => s.renderedHTML);
   const searchQuery = useAppStore((s) => s.searchQuery);
   const currentMatch = useAppStore((s) => s.currentMatch);
-  const theme = useAppStore((s) => s.theme);
   const documentWidth = useAppStore((s) => s.documentWidth);
   const currentFile = useAppStore((s) => s.currentFile);
   const frontmatter = useAppStore((s) => s.frontmatter);
@@ -202,21 +200,6 @@ export default function MarkdownView({ loadFile }: MarkdownViewProps) {
     window.addEventListener('keydown', handleKey, true);
     return () => window.removeEventListener('keydown', handleKey, true);
   }, [zoomedImage]);
-
-  // Render Mermaid + Vega diagrams on content or theme change. The cancelled
-  // flag is checked inside the renderers between async steps so a re-render
-  // (e.g. theme load completing right after content load on cold launch)
-  // can supersede an in-flight render without leaving half-rendered DOM.
-  useEffect(() => {
-    const container = contentRef.current;
-    if (!container) return;
-    let cancelled = false;
-    const isCancelled = () => cancelled;
-    renderSpecializedBlocks(container, theme, isCancelled).catch((e) => {
-      if (!cancelled) console.error('Specialized renderer failed', e);
-    });
-    return () => { cancelled = true; };
-  }, [displayHTML, theme]);
 
   return (
     <div className={documentWidthClass(documentWidth)}>

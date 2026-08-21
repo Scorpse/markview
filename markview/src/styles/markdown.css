@@ -191,6 +191,12 @@
   height: 420px;
 }
 
+/* markmap draws node labels with its own default fill, which is unreadable on
+   the dark theme's background. Bind them to the theme's text colour instead. */
+.markdown-body .markmap-diagram text {
+  fill: var(--text-color);
+}
+
 .markdown-body .specialized-renderer-error {
   color: var(--text-color);
   border: 1px solid rgba(192, 0, 0, 0.35);

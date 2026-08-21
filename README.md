@@ -1,10 +1,17 @@
 # MarkView
 
+> [!IMPORTANT]
+> **This is the community continuation of [MarkView](https://github.com/scos-lab/markview).**
+> Upstream became feature-frozen in August 2026 and will publish no further releases; its authors
+> have moved on to [Rho MD](https://rho.md). This fork carries MarkView forward under the same MIT
+> license, and releases are published here.
+> Original work © Wuko-Syn DEV / scos-lab — see [LICENSE](LICENSE).
+
 This fork extends MarkView for AI-generated technical Markdown while preserving its fast, local, read-only workflow.
 
 Additional support includes GitHub alerts, emoji shortcodes, YAML front matter, definition lists, subscript/superscript, safe Lucide icon shortcodes, local Graphviz/DOT, D2, Markmap and WaveDrom diagrams, and opt-in Marp slides. Rendered diagrams carry a hover toolbar for copying or revealing their source, links and images resolve relative to the open document, and relative `.md` links open in a new tab inside MarkView. The toolbar's width control cycles the reading column through narrow, wide, extra wide and full width; the choice is remembered.
 
-[![Latest release](https://img.shields.io/github/v/release/scos-lab/markview?label=latest&color=blue)](https://github.com/scos-lab/markview/releases)
+[![Latest release](https://img.shields.io/github/v/release/Scorpse/markview?label=latest&color=blue)](https://github.com/Scorpse/markview/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 An AI-native Markdown reader for Windows and Linux — renders Mermaid
@@ -54,20 +61,27 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 | Format | Link |
 |---------|------|
-| Microsoft Store | [Get it from Microsoft Store](https://apps.microsoft.com/detail/9n3cwdlvl9tq?hl=en-gb&gl=AU&ocid=pdpshare) |
-| Portable (.exe) | [MarkView_v1.0.5_portable.exe](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView_v1.0.5_portable.exe) |
-| Installer (MSI) | [MarkView_v1.0.5_x64.msi](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView.-.Markdown.Reader_1.0.5_x64_en-US.msi) |
+| Installer (NSIS) | [MarkView_1.2.0_x64-setup.exe](https://github.com/Scorpse/markview/releases/latest) |
+| Installer (MSI) | [MarkView_1.2.0_x64_en-US.msi](https://github.com/Scorpse/markview/releases/latest) |
 
-> **Note:** Windows SmartScreen may warn about downloaded `.exe` / `.msi` files because they are not code-signed. To bypass: click **"More info"** → **"Run anyway"**. Alternatively, right-click the file → **Properties** → check **"Unblock"** → OK. The **Microsoft Store** version does not have this issue.
+> **Note:** Windows SmartScreen will warn about these files because they are not code-signed. To bypass: click **"More info"** → **"Run anyway"**. Alternatively, right-click the file → **Properties** → check **"Unblock"** → OK.
 
 ### Linux
+
+Linux builds are not yet published from this fork — the 1.2.0 release ships Windows installers
+only. The Linux packaging in `markview/snap` and `markview/flatpak` is inherited and still carries
+upstream's `io.github.scos-lab.MarkView` app id, so it needs re-identifying before it can be
+published from here.
+
+Upstream's final Linux artifacts remain available and working at version 1.0.5:
 
 | Format | Link | Notes |
 |--------|------|-------|
 | `.deb` (1.0.5) | [MarkView-1.0.5-amd64.deb](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView-1.0.5-amd64.deb) | Ubuntu 24.04+, Debian 13+ (uses system WebKit) |
 | `.AppImage` (1.0.5) | [MarkView-1.0.5-amd64.AppImage](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView-1.0.5-amd64.AppImage) | Any distro with `libfuse2`, self-contained |
-| Snap Store | [![Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/markview-reader) | `sudo snap install markview-reader` |
-| Flathub | `flatpak install io.github.scos-lab.MarkView` | *pending review* |
+
+> The Microsoft Store, Snap and Flathub listings belong to the upstream project, are frozen at
+> 1.0.5, and are not updated by this fork.
 
 ```bash
 # .deb install

@@ -8,7 +8,7 @@ function languageOf(code: Element): string {
   return languageClass?.slice('language-'.length).toLowerCase() ?? '';
 }
 
-function restoreRenderedBlocks(container: HTMLElement) {
+function restoreRenderedBlocks(container: ParentNode) {
   container.querySelectorAll<HTMLElement>('[data-specialized-renderer][data-renderer-source]').forEach((wrapper) => {
     const source = wrapper.getAttribute('data-renderer-source') ?? '';
     const language = wrapper.getAttribute('data-renderer-language') ?? '';
@@ -100,7 +100,7 @@ function renderError(host: Element, rendererId: string, language: string, source
 }
 
 export async function renderSpecializedBlocks(
-  container: HTMLElement,
+  container: ParentNode,
   theme: RendererTheme,
   isCancelled: () => boolean = () => false,
   lookup: RendererLookup = getRenderer,
@@ -120,12 +120,12 @@ export async function renderSpecializedBlocks(
 
     try {
       const module = await definition.load();
-      if (isCancelled() || !host.isConnected) continue;
+      if (isCancelled()) continue;
       const rendered = await module.render({ source, language, theme });
-      if (isCancelled() || !host.isConnected) continue;
+      if (isCancelled()) continue;
       host.replaceWith(withControls(rendered, definition.id, language, source));
     } catch (error) {
-      if (!isCancelled() && host.isConnected) renderError(host, definition.id, language, source, error);
+      if (!isCancelled()) renderError(host, definition.id, language, source, error);
     }
   }
 }

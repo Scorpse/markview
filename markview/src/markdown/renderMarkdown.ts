@@ -19,6 +19,7 @@ import { rehypeAlerts } from './plugins/rehypeAlerts';
 import { remarkFrontmatterData } from './plugins/remarkFrontmatterData';
 import { remarkLucideIcons } from './plugins/remarkLucideIcons';
 import { specializedLanguages } from '../renderers/registry';
+import { renderDiagramsInHtml } from '../utils/diagrams';
 
 export interface RenderedMarkdown {
   html: string;
@@ -29,6 +30,14 @@ export interface RenderedMarkdown {
 const sanitizeSchema: Schema = {
   ...defaultSchema,
   clobberPrefix: '',
+  // The default schema allows only http/https for `src`, which drops inline
+  // base64 images. MarkView renders those (MarkdownView leaves `data:` URLs
+  // alone rather than routing them through the asset protocol), and an image
+  // loaded from a data URL cannot execute script.
+  protocols: {
+    ...defaultSchema.protocols,
+    src: [...(defaultSchema.protocols?.src ?? []), 'data'],
+  },
   tagNames: [...(defaultSchema.tagNames ?? []), 'kbd', 'svg', 'path', 'circle', 'line', 'polyline', 'polygon', 'rect'],
   attributes: {
     ...defaultSchema.attributes,
@@ -68,7 +77,10 @@ function headingCollector(headings: Heading[]) {
   };
 }
 
-export async function renderMarkdown(source: string): Promise<RenderedMarkdown> {
+export async function renderMarkdown(
+  source: string,
+  theme: 'light' | 'dark' = 'light',
+): Promise<RenderedMarkdown> {
   const headings: Heading[] = [];
   const processor = unified()
     .use(remarkParse)
@@ -85,13 +97,13 @@ export async function renderMarkdown(source: string): Promise<RenderedMarkdown> 
     .use(rehypeRaw)
     .use(rehypeAlerts)
     .use(rehypeSanitize, sanitizeSchema)
-    .use(rehypeHighlight, { plainText: specializedLanguages })
+    .use(rehypeHighlight, { plainText: ['mermaid', 'vega', 'vega-lite', ...specializedLanguages] })
     .use(rehypeKatex)
     .use(rehypeStringify);
 
   const file = await processor.process(source);
   return {
-    html: String(file),
+    html: await renderDiagramsInHtml(String(file), theme),
     headings,
     frontmatter: (file.data.frontmatter as Record<string, unknown>) ?? {},
   };

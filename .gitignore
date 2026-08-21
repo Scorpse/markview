@@ -4,6 +4,7 @@ node_modules/
 # Build output
 dist/
 markview/src-tauri/target/
+.worktrees/
 
 # Editor
 .vscode/
