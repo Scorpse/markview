@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FolderOpen, Moon, Sun, ZoomIn, ZoomOut, Search, Info } from 'lucide-react';
+import { FolderOpen, Moon, Sun, ZoomIn, ZoomOut, Search, Info, StretchHorizontal } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { tauriCommands } from '../utils/tauriCommands';
 import AboutModal from './AboutModal';
@@ -17,6 +17,8 @@ export default function Toolbar({ loadFile }: ToolbarProps) {
     setFontSize,
     setSearchVisible,
     searchVisible,
+    readableLineLength,
+    setReadableLineLength,
   } = useAppStore();
 
   const handleOpenFile = async () => {
@@ -69,6 +71,16 @@ export default function Toolbar({ loadFile }: ToolbarProps) {
           <ZoomIn size={14} />
         </button>
       </div>
+
+      <button
+        onClick={() => setReadableLineLength(!readableLineLength)}
+        className={`p-1.5 rounded hover:bg-[var(--tab-hover)] text-[var(--text-color)] ${!readableLineLength ? 'bg-[var(--tab-hover)]' : ''}`}
+        title={readableLineLength ? 'Use Full Document Width' : 'Use Readable Line Length'}
+        aria-label="Readable line length"
+        aria-pressed={readableLineLength}
+      >
+        <StretchHorizontal size={16} />
+      </button>
 
       <button
         onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}

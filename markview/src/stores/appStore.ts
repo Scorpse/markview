@@ -31,6 +31,7 @@ export interface AppState {
   recentFiles: string[];
   theme: 'light' | 'dark';
   fontSize: number;
+  readableLineLength: boolean;
   sidebarVisible: boolean;
   searchVisible: boolean;
   searchQuery: string;
@@ -49,6 +50,7 @@ export interface AppState {
   setRecentFiles: (files: string[]) => void;
   setTheme: (theme: 'light' | 'dark') => void;
   setFontSize: (size: number) => void;
+  setReadableLineLength: (readable: boolean) => void;
   setSidebarVisible: (visible: boolean) => void;
   setSearchVisible: (visible: boolean) => void;
   setSearchQuery: (query: string) => void;
@@ -81,6 +83,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   recentFiles: [],
   theme: 'light',
   fontSize: 16,
+  readableLineLength: true,
   sidebarVisible: true,
   searchVisible: false,
   searchQuery: '',
@@ -167,6 +170,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setRecentFiles: (files) => set({ recentFiles: files }),
   setTheme: (theme) => set({ theme }),
   setFontSize: (fontSize) => set({ fontSize }),
+  setReadableLineLength: (readableLineLength) => set({ readableLineLength }),
   setSidebarVisible: (visible) => set({ sidebarVisible: visible }),
   setSearchVisible: (visible) => set({ searchVisible: visible }),
   setSearchQuery: (query) => set({ searchQuery: query }),
