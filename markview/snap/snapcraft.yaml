@@ -1,7 +1,7 @@
 name: markview-reader
 title: MarkView
 base: core24
-version: '1.0.5'
+version: '1.3.0'
 summary: Open AI-generated Markdown files with diagrams and formulas rendered
 description: |
   MarkView is the fastest way to read Markdown files — especially the
@@ -38,14 +38,14 @@ contact: https://github.com/scos-lab/markview/issues
 apps:
   markview-reader:
     command: usr/bin/markview
-    desktop: usr/share/applications/io.github.scos-lab.MarkView.desktop
+    desktop: usr/share/applications/io.github.Scorpse.MarkView.desktop
     extensions: [gnome]
     plugs:
       - home
       - removable-media
       - network
       - browser-support
-    common-id: io.github.scos-lab.MarkView
+    common-id: io.github.Scorpse.MarkView
     environment:
       # WebKit2GTK tries to nest its own bubblewrap sandbox inside snap
       # confinement and fails. Disable WebKit's sandbox — snap already
@@ -99,7 +99,7 @@ parts:
       # Rename desktop file + metainfo to the reverse-DNS Flathub-style ID
       # so the same ID works across Snap and Flathub
       OLD_ID="MarkView - Markdown Reader"
-      NEW_ID="io.github.scos-lab.MarkView"
+      NEW_ID="io.github.Scorpse.MarkView"
       if [ -f "$CRAFT_PART_INSTALL/usr/share/applications/${OLD_ID}.desktop" ]; then
         mv "$CRAFT_PART_INSTALL/usr/share/applications/${OLD_ID}.desktop" \
            "$CRAFT_PART_INSTALL/usr/share/applications/${NEW_ID}.desktop"
@@ -109,7 +109,7 @@ parts:
       fi
 
       # Install AppStream metainfo
-      install -Dm644 packaging/io.github.scos-lab.MarkView.metainfo.xml \
+      install -Dm644 packaging/io.github.Scorpse.MarkView.metainfo.xml \
         "$CRAFT_PART_INSTALL/usr/share/metainfo/${NEW_ID}.metainfo.xml"
 
       # Install icons at multiple hicolor sizes so AppStream / Snap Store

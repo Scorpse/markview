@@ -6,10 +6,10 @@ Three artifacts:
 |--------|-------|----------|
 | `.deb` + `.AppImage` | GitHub Releases, direct download | `npm run tauri build` (local) |
 | Snap | Snap Store (`snapcraft.io/markview-reader`) | `snapcraft` reads `snap/snapcraft.yaml` |
-| Flatpak | Flathub (`flathub/io.github.scos-lab.MarkView`) | `flatpak-builder` reads `flatpak/io.github.scos-lab.MarkView.yml` |
+| Flatpak | Flathub (`flathub/io.github.Scorpse.MarkView`) | `flatpak-builder` reads `flatpak/io.github.Scorpse.MarkView.yml` |
 
 All three use the same AppStream metadata in
-`packaging/io.github.scos-lab.MarkView.metainfo.xml`.
+`packaging/io.github.Scorpse.MarkView.metainfo.xml`.
 
 ---
 
@@ -66,7 +66,7 @@ new apps.
    flatpak-node-generator npm package-lock.json -o flatpak/node-sources.json
    ```
 2. Uncomment the `cargo-sources.json` / `node-sources.json` includes in
-   `flatpak/io.github.scos-lab.MarkView.yml`.
+   `flatpak/io.github.Scorpse.MarkView.yml`.
 3. Pin the git source to an exact commit SHA (Flathub reviewer will ask).
 
 ### Local test
@@ -76,18 +76,18 @@ flatpak install --user -y flathub org.gnome.Platform//47 org.gnome.Sdk//47 \
     org.freedesktop.Sdk.Extension.node22//24.08
 
 flatpak-builder --user --install --force-clean build-dir \
-    flatpak/io.github.scos-lab.MarkView.yml
+    flatpak/io.github.Scorpse.MarkView.yml
 
-flatpak run io.github.scos-lab.MarkView
+flatpak run io.github.Scorpse.MarkView
 ```
 
 ### Submit
 1. Fork <https://github.com/flathub/flathub>, create branch
-   `new-pr/io.github.scos-lab.MarkView`.
-2. Add: `io.github.scos-lab.MarkView.yml`,
-   `cargo-sources.json`, `node-sources.json`, `io.github.scos-lab.MarkView.metainfo.xml`.
+   `new-pr/io.github.Scorpse.MarkView`.
+2. Add: `io.github.Scorpse.MarkView.yml`,
+   `cargo-sources.json`, `node-sources.json`, `io.github.Scorpse.MarkView.metainfo.xml`.
 3. Open PR. A reviewer will comment; iterate until merged.
-4. Once merged, a dedicated `flathub/io.github.scos-lab.MarkView` repo
+4. Once merged, a dedicated `flathub/io.github.Scorpse.MarkView` repo
    is created — future updates PR into *that* repo, not flathub/flathub.
 
 ---
@@ -97,7 +97,7 @@ flatpak run io.github.scos-lab.MarkView
 - **Tauri identifier** (`tauri.conf.json`): `com.markview.app` — kept for
   backward compatibility with the Microsoft Store binary.
 - **Linux distribution ID** (Snap / Flathub / metainfo XML):
-  `io.github.scos-lab.MarkView` — Flathub policy requires reverse-DNS
+  `io.github.Scorpse.MarkView` — Flathub policy requires reverse-DNS
   under a domain the publisher owns; we don't own `markview.app`, so we
   use the `io.github.<org>.<repo>` convention Flathub accepts for
   GitHub-hosted projects.

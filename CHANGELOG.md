@@ -79,5 +79,9 @@ this fork carries the project forward under the same MIT license.
   Every renderer and viewer is lazy-loaded.
 - Automated checks: 24 → 100.
 - Ships Windows (MSI, NSIS) and Linux (`.deb`, `.rpm`, AppImage) builds through GitHub Releases.
-  Flatpak and Snap are not published: the inherited manifests still carry upstream's
-  `io.github.scos-lab.MarkView` app id and would need re-identifying first.
+- The Flatpak and Snap manifests, the AppStream metainfo and the Snap desktop entry are
+  re-identified from `io.github.scos-lab.MarkView` to `io.github.Scorpse.MarkView`, which this
+  project actually owns. Because the new id contains no hyphen, the manifest no longer needs the
+  `sed` rewrite that existed only to reconcile the hyphen with Flatpak's underscore rule. Neither
+  channel is submitted to yet; the Snap name `markview-reader` is still upstream's registration
+  and would need a new name before publishing.

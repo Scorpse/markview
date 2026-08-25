@@ -68,12 +68,12 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 ### Linux
 
-Linux builds are planned for the 1.3.0 release and will be published as GitHub Releases. This
-fork does not use the Microsoft Store, Snap Store or Flathub — the inherited packaging in
-`markview/snap` and `markview/flatpak` still carries upstream's `io.github.scos-lab.MarkView`
-app id and would need re-identifying before it could be published from here.
+Linux builds are published as GitHub Releases: `.deb`, `.rpm` and an AppImage. This fork does
+not publish to the Microsoft Store, Snap Store or Flathub. The Flatpak and Snap manifests have
+been re-identified to `io.github.Scorpse.MarkView`, so they are ready if those channels are
+wanted later, but nothing is submitted to them today.
 
-Until then, upstream's final Linux artifacts remain available and working at version 1.0.5:
+Upstream's final Linux artifacts remain available at version 1.0.5:
 
 | Format | Link | Notes |
 |--------|------|-------|

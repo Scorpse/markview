@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.scos-lab.MarkView</id>
+  <id>io.github.Scorpse.MarkView</id>
 
   <name>MarkView</name>
   <summary>Open AI-generated Markdown files with diagrams and formulas rendered</summary>
 
-  <developer id="io.github.scos-lab">
-    <name>scos-lab</name>
+  <developer id="io.github.Scorpse">
+    <name>Scorpse</name>
   </developer>
 
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
 
-  <icon type="stock">io.github.scos-lab.MarkView</icon>
+  <icon type="stock">io.github.Scorpse.MarkView</icon>
 
   <description>
     <p>
@@ -40,11 +40,11 @@
     </p>
   </description>
 
-  <launchable type="desktop-id">io.github.scos-lab.MarkView.desktop</launchable>
+  <launchable type="desktop-id">io.github.Scorpse.MarkView.desktop</launchable>
 
-  <url type="homepage">https://github.com/scos-lab/markview</url>
-  <url type="bugtracker">https://github.com/scos-lab/markview/issues</url>
-  <url type="vcs-browser">https://github.com/scos-lab/markview</url>
+  <url type="homepage">https://github.com/Scorpse/markview</url>
+  <url type="bugtracker">https://github.com/Scorpse/markview/issues</url>
+  <url type="vcs-browser">https://github.com/Scorpse/markview</url>
 
   <categories>
     <category>Office</category>
@@ -79,27 +79,27 @@
   <screenshots>
     <screenshot type="default">
       <caption>Data charts — candlestick, heatmap, bar, line, scatter</caption>
-      <image>https://raw.githubusercontent.com/scos-lab/markview/main/markview/docs/images/screenshot-1.png</image>
+      <image>https://raw.githubusercontent.com/Scorpse/markview/main/markview/docs/images/screenshot-1.png</image>
     </screenshot>
     <screenshot>
       <caption>Flowcharts and sequence diagrams rendered as images</caption>
-      <image>https://raw.githubusercontent.com/scos-lab/markview/main/markview/docs/images/screenshot-2.png</image>
+      <image>https://raw.githubusercontent.com/Scorpse/markview/main/markview/docs/images/screenshot-2.png</image>
     </screenshot>
     <screenshot>
       <caption>Math formulas with matrices, integrals, and series</caption>
-      <image>https://raw.githubusercontent.com/scos-lab/markview/main/markview/docs/images/screenshot-3.png</image>
+      <image>https://raw.githubusercontent.com/Scorpse/markview/main/markview/docs/images/screenshot-3.png</image>
     </screenshot>
     <screenshot>
       <caption>Tables, task lists, and footnotes</caption>
-      <image>https://raw.githubusercontent.com/scos-lab/markview/main/markview/docs/images/screenshot-4.png</image>
+      <image>https://raw.githubusercontent.com/Scorpse/markview/main/markview/docs/images/screenshot-4.png</image>
     </screenshot>
     <screenshot>
       <caption>Syntax highlighting across 100+ programming languages</caption>
-      <image>https://raw.githubusercontent.com/scos-lab/markview/main/markview/docs/images/screenshot-5.png</image>
+      <image>https://raw.githubusercontent.com/Scorpse/markview/main/markview/docs/images/screenshot-5.png</image>
     </screenshot>
     <screenshot>
       <caption>Gantt charts, class diagrams, and ER diagrams</caption>
-      <image>https://raw.githubusercontent.com/scos-lab/markview/main/markview/docs/images/screenshot-6.png</image>
+      <image>https://raw.githubusercontent.com/Scorpse/markview/main/markview/docs/images/screenshot-6.png</image>
     </screenshot>
   </screenshots>
 
