@@ -40,6 +40,15 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 ## Download
 
+> [!WARNING]
+> **Security note for the 1.0.5 builds below.** They render raw HTML inside a Markdown document
+> without sanitising it, so opening a `.md` file you did not write can run script inside the app —
+> and in these builds that script can read local files and send their contents out. The fix
+> ([#8](https://github.com/scos-lab/markview/pull/8)) is in `main` and in the
+> [community fork](#community-fork), but **no further release will be cut from this repository**.
+> If you open Markdown from untrusted sources, take a build from the fork, use
+> [Rho MD](https://rho.md), or build from `main` yourself.
+
 ### Windows
 
 | Format | Link |
