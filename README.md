@@ -7,6 +7,7 @@
 > Active development has moved to its successor, **[Rho MD](https://rho.md)** — a Markdown reader +
 > notebook built on everything we learned here, with interactive documents, a document library, and
 > Android support. Issues and pull requests on this repository may receive limited or no attention.
+> Feature work by the community continues in a [fork](#community-fork), which cuts its own releases.
 
 [![Latest release](https://img.shields.io/github/v/release/scos-lab/markview?label=latest&color=blue)](https://github.com/scos-lab/markview/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -75,6 +76,15 @@ handler" to bind `.md` files to MarkView system-wide.
 | `.deb` install fails with WebKit dependency error on older Debian / Ubuntu | `sudo apt install libwebkit2gtk-4.1-0` (or `-4.0-37` on older releases) |
 | "Set as default" doesn't take effect | Run manually: `xdg-mime default markview-reader.desktop text/markdown` |
 | Snap version can't open files outside home directory | `sudo snap connect markview-reader:removable-media` (and/or `:home`) |
+
+## Community Fork
+
+Feature work on MarkView continues in a community fork — **[Scorpse/markview](https://github.com/Scorpse/markview)**
+(branch `main`): *an AI-native Markdown reader — Mermaid, Vega-Lite, KaTeX, Graphviz/DOT, D2, Markmap, WaveDrom,
+Marp slides, plus JSON/YAML/JSONL/CSV/config viewers.*
+
+It is MIT like this repository and maintained independently by [@Scorpse](https://github.com/Scorpse). New releases
+and binaries come from there — this repository cuts none — so issues about those builds belong in that fork.
 
 ## Features
 
