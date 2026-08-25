@@ -44,3 +44,8 @@ walkdir = "2.5.0"
 [target.'cfg(windows)'.dependencies]
 winreg = "0.55"
 
+
+[profile.release]
+# Debug symbols served no purpose in shipped bundles: the binary was 29 MB
+# unstripped against 22 MB stripped, and every bundle carried the difference.
+strip = true

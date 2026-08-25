@@ -78,6 +78,11 @@ this fork carries the project forward under the same MIT license.
 - Startup cost is unchanged: the ordinary application chunk stays at 499.38 kB (176.91 kB gzip).
   Every renderer and viewer is lazy-loaded.
 - Automated checks: 24 → 100.
+- Release builds are stripped (`strip = true` in the Cargo release profile). The binary shipped
+  unstripped at 29 MB against 22 MB stripped; the Linux packages lose about 0.7 MB each. The
+  AppImage stays near 89 MB regardless, because it bundles WebKit, JavaScriptCore and ICU —
+  roughly 152 MB of libraries before compression — which the `.deb` and `.rpm` take from the
+  system instead.
 - Ships Windows (MSI, NSIS) and Linux (`.deb`, `.rpm`, AppImage) builds through GitHub Releases.
 - The Flatpak and Snap manifests, the AppStream metainfo and the Snap desktop entry are
   re-identified from `io.github.scos-lab.MarkView` to `io.github.Scorpse.MarkView`, which this
