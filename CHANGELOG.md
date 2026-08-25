@@ -63,11 +63,21 @@ this fork carries the project forward under the same MIT license.
   here. The upstream Microsoft Store, Snap and Flathub listings are frozen at 1.0.5 and are not
   updated by this fork.
 
+### Upstream
+
+- Merged upstream's final state (`scos-lab/markview` at `434aa23`), which includes the merged
+  security hardening (#8), the readable-line-length toggle (#7), the pipeline diagram rendering
+  (#5), and upstream's feature-freeze notices. Upstream now links this repository as the
+  community continuation; no further releases are cut there.
+- Where the two overlapped, this fork's implementations were kept and upstream's duplicates
+  removed, so there is a single sanitiser (`renderers/svg.ts`), a single sanitise schema and a
+  single diagram path rather than two that could drift apart.
+
 ### Notes
 
 - Startup cost is unchanged: the ordinary application chunk stays at 499.38 kB (176.91 kB gzip).
   Every renderer and viewer is lazy-loaded.
 - Automated checks: 24 → 100.
-- This release ships Windows installers only. The inherited Linux packaging still carries
-  upstream's `io.github.scos-lab.MarkView` app id and needs re-identifying before it can be
-  published from this fork.
+- Ships Windows (MSI, NSIS) and Linux (`.deb`, `.rpm`, AppImage) builds through GitHub Releases.
+  Flatpak and Snap are not published: the inherited manifests still carry upstream's
+  `io.github.scos-lab.MarkView` app id and would need re-identifying first.

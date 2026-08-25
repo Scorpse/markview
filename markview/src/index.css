@@ -5,6 +5,11 @@
 @import "highlight.js/styles/github.css" layer(base);
 @import "katex/dist/katex.min.css" layer(base);
 
+.markview-full-width .max-w-4xl {
+  max-width: none;
+  width: 100%;
+}
+
 [data-theme='dark'] {
   /* Override highlight.js dark theme dynamically if needed */
   /* This could be handled by swapping stylesheets, but for simplicity we rely on themes.css */
