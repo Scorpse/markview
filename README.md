@@ -68,29 +68,28 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 ### Linux
 
-Linux builds are published as GitHub Releases: `.deb`, `.rpm` and an AppImage. This fork does
-not publish to the Microsoft Store, Snap Store or Flathub. The Flatpak and Snap manifests have
-been re-identified to `io.github.Scorpse.MarkView`, so they are ready if those channels are
-wanted later, but nothing is submitted to them today.
-
-Upstream's final Linux artifacts remain available at version 1.0.5:
-
 | Format | Link | Notes |
 |--------|------|-------|
-| `.deb` (1.0.5) | [MarkView-1.0.5-amd64.deb](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView-1.0.5-amd64.deb) | Ubuntu 24.04+, Debian 13+ (uses system WebKit) |
-| `.AppImage` (1.0.5) | [MarkView-1.0.5-amd64.AppImage](https://github.com/scos-lab/markview/releases/download/v1.0.5/MarkView-1.0.5-amd64.AppImage) | Any distro with `libfuse2`, self-contained |
-
-> The Microsoft Store, Snap and Flathub listings belong to the upstream project, are frozen at
-> 1.0.5, and are not updated by this fork. Releases here are published through GitHub Releases only.
+| `.deb` | [MarkView_1.3.0_amd64.deb](https://github.com/Scorpse/markview/releases/latest) | Debian / Ubuntu, uses system WebKit |
+| `.rpm` | [MarkView-1.3.0-1.x86_64.rpm](https://github.com/Scorpse/markview/releases/latest) | Fedora / RHEL / openSUSE |
+| `.AppImage` | [MarkView_1.3.0_amd64.AppImage](https://github.com/Scorpse/markview/releases/latest) | Any distro, self-contained |
 
 ```bash
-# .deb install
-sudo dpkg -i MarkView-1.0.5-amd64.deb
+# .deb
+sudo dpkg -i MarkView_1.3.0_amd64.deb
 
-# .AppImage install
-chmod +x MarkView-1.0.5-amd64.AppImage
-./MarkView-1.0.5-amd64.AppImage
+# .rpm
+sudo rpm -i MarkView-1.3.0-1.x86_64.rpm
+
+# .AppImage
+chmod +x MarkView_1.3.0_amd64.AppImage
+./MarkView_1.3.0_amd64.AppImage
 ```
+
+> Releases are published through GitHub Releases only. This fork does not publish to the
+> Microsoft Store or Flathub; those listings belong to the upstream project and are frozen at
+> 1.0.5. The Flatpak manifest and AppStream metainfo have been re-identified to
+> `io.github.Scorpse.MarkView`, so Flathub remains possible later.
 
 After install, open the About panel and click "Set MarkView as default .md
 handler" to bind `.md` files to MarkView system-wide.
@@ -101,8 +100,7 @@ handler" to bind `.md` files to MarkView system-wide.
 |---------|-----|
 | `.AppImage` won't launch on Ubuntu 24.04 (`error while loading shared libraries: libfuse.so.2`) | `sudo apt install libfuse2t64` |
 | `.deb` install fails with WebKit dependency error on older Debian / Ubuntu | `sudo apt install libwebkit2gtk-4.1-0` (or `-4.0-37` on older releases) |
-| "Set as default" doesn't take effect | Run manually: `xdg-mime default markview-reader.desktop text/markdown` |
-| Snap version can't open files outside home directory | `sudo snap connect markview-reader:removable-media` (and/or `:home`) |
+| "Set as default" doesn't take effect | Run manually: `xdg-mime default markview.desktop text/markdown` |
 
 ## Features
 

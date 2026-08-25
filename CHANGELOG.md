@@ -3,7 +3,7 @@
 All notable changes to this fork are documented here. This project follows
 [Semantic Versioning](https://semver.org/) and continues MarkView's version line.
 
-## [1.3.0] — unreleased
+## [1.3.0] — 2026-08-25
 
 First release of the community continuation. Opens a new minor line carrying every fix and
 addition below. Upstream
@@ -60,8 +60,8 @@ this fork carries the project forward under the same MIT license.
 - `package.json` and `Cargo.toml` now declare `MIT` explicitly; `THIRD_PARTY_NOTICES.md` records
   `dompurify` and notes that `lightningcss` and `caniuse-lite` are build-time only.
 - The README now identifies this repository as the community continuation and points downloads
-  here. The upstream Microsoft Store, Snap and Flathub listings are frozen at 1.0.5 and are not
-  updated by this fork.
+  here, at 1.3.0, for Windows and Linux alike. The upstream Microsoft Store and Flathub listings
+  are frozen at 1.0.5 and are not updated by this fork.
 
 ### Upstream
 
