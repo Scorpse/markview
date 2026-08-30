@@ -1,4 +1,4 @@
-import { useEffect, useCallback, lazy, Suspense } from 'react';
+import { useEffect, useCallback, lazy, Suspense, useRef } from 'react';
 import { listen } from '@tauri-apps/api/event';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { Menu } from 'lucide-react';
@@ -14,6 +14,7 @@ import WelcomePage from './components/WelcomePage';
 import SearchBar from './components/SearchBar';
 import SetDefaultModal from './components/SetDefaultModal';
 import { isSupportedPath } from './viewers/fileKind';
+import { clearContrastAdjustments, improveDocumentContrast } from './utils/contrast';
 
 const StructuredView = lazy(() => import('./viewers/StructuredView'));
 
@@ -21,6 +22,7 @@ function App() {
   useTheme();
   useRecentFilesPersistence();
   useMarkdown();
+  const contentRef = useRef<HTMLElement>(null);
 
   const {
     activeTabId,
@@ -42,9 +44,23 @@ function App() {
     addRecentFile,
     showSetDefault,
     setShowSetDefault,
+    rawMarkdown,
+    contrastCheckRevision,
+    setContrastAdjustedBlocks,
+    clearContrastResult,
   } = useAppStore();
 
   const hasActiveFile = activeTabId !== null;
+
+  useEffect(() => {
+    if (contrastCheckRevision === 0 || !contentRef.current) return;
+    setContrastAdjustedBlocks(improveDocumentContrast(contentRef.current));
+  }, [contrastCheckRevision, setContrastAdjustedBlocks]);
+
+  useEffect(() => {
+    if (contentRef.current) clearContrastAdjustments(contentRef.current);
+    clearContrastResult();
+  }, [activeTabId, theme, rawMarkdown, clearContrastResult]);
 
   const loadFile = useCallback(async (path: string) => {
     try {
@@ -212,7 +228,7 @@ function App() {
       <div className="flex flex-1 overflow-hidden relative">
         {sidebarVisible && <Sidebar />}
 
-        <main className="flex-1 relative overflow-hidden flex flex-col">
+        <main ref={contentRef} className="flex-1 relative overflow-hidden flex flex-col">
           {searchVisible && <SearchBar />}
 
           <div className="flex-1 overflow-y-auto w-full relative">

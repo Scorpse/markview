@@ -10,10 +10,33 @@
   width: 100%;
 }
 
-[data-theme='dark'] {
-  /* Override highlight.js dark theme dynamically if needed */
-  /* This could be handled by swapping stylesheets, but for simplicity we rely on themes.css */
+/* The bundled GitHub Highlight.js stylesheet is a light palette. Override it
+   only inside dark Markdown so ordinary documents need no runtime correction. */
+[data-theme='dark'] .markdown-body code.hljs {
+  color: #cdd6f4;
+  background: transparent;
 }
+
+[data-theme='dark'] .markdown-body .hljs-comment,
+[data-theme='dark'] .markdown-body .hljs-quote { color: #a6adc8; }
+[data-theme='dark'] .markdown-body .hljs-keyword,
+[data-theme='dark'] .markdown-body .hljs-selector-tag,
+[data-theme='dark'] .markdown-body .hljs-literal { color: #f38ba8; }
+[data-theme='dark'] .markdown-body .hljs-string,
+[data-theme='dark'] .markdown-body .hljs-doctag,
+[data-theme='dark'] .markdown-body .hljs-regexp { color: #a6e3a1; }
+[data-theme='dark'] .markdown-body .hljs-number,
+[data-theme='dark'] .markdown-body .hljs-built_in,
+[data-theme='dark'] .markdown-body .hljs-symbol { color: #fab387; }
+[data-theme='dark'] .markdown-body .hljs-title,
+[data-theme='dark'] .markdown-body .hljs-section,
+[data-theme='dark'] .markdown-body .hljs-attr { color: #89b4fa; }
+[data-theme='dark'] .markdown-body .hljs-variable,
+[data-theme='dark'] .markdown-body .hljs-template-variable,
+[data-theme='dark'] .markdown-body .hljs-type { color: #f9e2af; }
+[data-theme='dark'] .markdown-body .hljs-meta,
+[data-theme='dark'] .markdown-body .hljs-selector-class,
+[data-theme='dark'] .markdown-body .hljs-selector-id { color: #cba6f7; }
 
 @media print {
   body {

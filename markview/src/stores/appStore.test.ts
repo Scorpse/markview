@@ -17,3 +17,22 @@ describe('document width preference', () => {
     expect(useAppStore.getState().documentWidth).toBe('full');
   });
 });
+
+describe('on-demand contrast check', () => {
+  beforeEach(() => {
+    useAppStore.setState({ contrastCheckRevision: 0, contrastAdjustedBlocks: null });
+  });
+
+  it('requests a scan without running one automatically', () => {
+    expect(useAppStore.getState().contrastAdjustedBlocks).toBeNull();
+    useAppStore.getState().requestContrastCheck();
+    expect(useAppStore.getState().contrastCheckRevision).toBe(1);
+  });
+
+  it('stores and clears the latest result', () => {
+    useAppStore.getState().setContrastAdjustedBlocks(2);
+    expect(useAppStore.getState().contrastAdjustedBlocks).toBe(2);
+    useAppStore.getState().clearContrastResult();
+    expect(useAppStore.getState().contrastAdjustedBlocks).toBeNull();
+  });
+});
