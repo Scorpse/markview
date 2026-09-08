@@ -1,0 +1,31 @@
+# Widget Platform — STL Spec
+# Semantic Tension Language v1.0
+# Synthetic fixture: exercises both the v1.0 and stl-k/0.1 attribute profiles.
+
+# ============================================================
+# SECTION A — DECISION GRAPH
+# ============================================================
+
+# --- Intent ---
+[Project:Widget] -> [Goal:ShipReader] ::mod(
+  rule="definitional", confidence=0.95,
+  description="A local, read-only reader for generated documents, with no account and no sync.",
+  source="design/overview.md")
+
+# --- Dependency graph (source enables target) ---
+[Sub1:Parser]   -> [Sub3:Viewer]  ::mod(rule="logical", confidence=0.95, description="the viewer renders what the parser produced")
+[Sub2:Registry] -> [Sub3:Viewer]  ::mod(rule="logical", confidence=0.9)
+[Sub3:Viewer]   -> [Sub4:Printing] ::mod(rule="logical", confidence=0.8, description="print reuses the rendered document")
+
+# --- Risks ---
+[Risk:LargeDocuments] -> [Mitigation:RowCap] ::mod(rule="causal", confidence=0.7, description="cap tabular views and say how many rows were left out")
+
+# ── 2. STL-K profile ───────────────────────────────────────
+# Grammar: [ns:Anchor] -> [ns:Target] ::mod(action=..., outcome=..., ...)
+[demo:OriginalIntent_reader] -> [demo:Design_reader] ::mod(action="capture", outcome="pass", description="Immutable statement of what the reader is for.", event_id="intent", author="fixture", timestamp="2026-01-01T00:00:00+00:00", provenance="verified", confidence=1.0, visibility="human_summary", sensitivity="internal", profile_version="stl-k/0.1")
+[demo:Decision_runtime] -> [demo:Choice_typescript] ::mod(action="decide", outcome="pass", event_id="dec_runtime", author="fixture", timestamp="2026-01-01T00:01:00+00:00", provenance="verified", confidence=1.0, visibility="human_summary", sensitivity="internal", profile_version="stl-k/0.1")
+[demo:Deliverable_viewer] -> [demo:OriginalIntent_reader] ::mod(action="deliver", outcome="pending", deliverable_id="viewer", event_id="del_viewer", author="fixture", timestamp="2026-01-01T00:02:00+00:00", provenance="reported", confidence=0.95, visibility="human_summary", sensitivity="internal", profile_version="stl-k/0.1")
+[demo:Capability_read_files] -> [demo:Deliverable_viewer] ::mod(action="require_capability", outcome="fail", capability_id="read_files", capability_class="external", description="Reading a file the sandbox does not grant fails closed.", event_id="cap_read", author="fixture", timestamp="2026-01-01T00:03:00+00:00", provenance="reported", confidence=0.6, visibility="procedural", sensitivity="internal", profile_version="stl-k/0.1")
+
+# --- Malformed input degrades to a reported problem ---
+this line is not a comment and not an edge

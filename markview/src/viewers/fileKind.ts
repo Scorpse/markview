@@ -3,7 +3,7 @@
  * it does not positively recognise as structured data is treated as Markdown,
  * which is the behaviour the app had before structured viewers existed.
  */
-export type FileKind = 'markdown' | 'json' | 'yaml' | 'jsonl' | 'csv' | 'config';
+export type FileKind = 'markdown' | 'json' | 'yaml' | 'jsonl' | 'csv' | 'config' | 'stl';
 
 const EXTENSION_KINDS: Record<string, FileKind> = {
   md: 'markdown',
@@ -16,6 +16,7 @@ const EXTENSION_KINDS: Record<string, FileKind> = {
   ndjson: 'jsonl',
   csv: 'csv',
   tsv: 'csv',
+  stl: 'stl',
   toml: 'config',
   ini: 'config',
   env: 'config',
@@ -48,9 +49,17 @@ export function extensionOf(path: string): string {
   return dot <= 0 ? '' : name.slice(dot + 1).toLowerCase();
 }
 
+/**
+ * STL documents are also written as `.stl-k.md` so ordinary editors treat them
+ * as text; the content is identical STL, not Markdown.
+ */
+const STL_MARKDOWN = /\.stl(-[a-z0-9]+)?\.md$/i;
+
 export function fileKindFor(path: string): FileKind {
-  const byName = FILENAME_KINDS[fileNameOf(path).toLowerCase()];
+  const name = fileNameOf(path).toLowerCase();
+  const byName = FILENAME_KINDS[name];
   if (byName) return byName;
+  if (STL_MARKDOWN.test(name)) return 'stl';
   return EXTENSION_KINDS[extensionOf(path)] ?? 'markdown';
 }
 

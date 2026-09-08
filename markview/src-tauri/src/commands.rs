@@ -20,9 +20,9 @@ pub async fn open_file_dialog(app: AppHandle) -> Result<Option<FileResult>, Stri
     let (tx, rx) = std::sync::mpsc::channel();
     app.dialog()
         .file()
-        .add_filter("All supported", &["md", "mdx", "markdown", "json", "yaml", "yml", "jsonl", "ndjson", "csv", "tsv", "toml", "ini", "env", "conf", "properties"])
+        .add_filter("All supported", &["md", "mdx", "markdown", "json", "yaml", "yml", "jsonl", "ndjson", "csv", "tsv", "stl", "toml", "ini", "env", "conf", "properties"])
         .add_filter("Markdown", &["md", "mdx", "markdown"])
-        .add_filter("Data", &["json", "yaml", "yml", "jsonl", "ndjson", "csv", "tsv"])
+        .add_filter("Data", &["json", "yaml", "yml", "jsonl", "ndjson", "csv", "tsv", "stl"])
         .add_filter("Config", &["toml", "ini", "env", "conf", "properties"])
         .pick_file(move |file_path| {
         tx.send(file_path).unwrap();
