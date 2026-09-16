@@ -51,4 +51,10 @@ describe('StlView', () => {
     render(<StlView source={''} />);
     expect(screen.getByText('No STL statements found.')).toBeTruthy();
   });
+
+  it('shows diagnostics when an invalid file has no relations', () => {
+    render(<StlView source={'not STL'} />);
+    expect(screen.getByText(/Line 1/)).toBeTruthy();
+    expect(screen.queryByText('No STL statements found.')).toBeNull();
+  });
 });

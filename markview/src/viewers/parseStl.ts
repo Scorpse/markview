@@ -39,6 +39,12 @@ export const PRIMARY_ATTRIBUTES = ['action', 'rule', 'outcome', 'confidence'] as
 const ANCHOR = /\s*\[([^\]]+)\]/y;
 const ARROW = /\s*(?:->|→)/y;
 const MODIFIER_START = /\s*::mod\s*\(/y;
+const IDENTIFIER = /^[\p{L}\p{N}_][\p{L}\p{N}_-]*$/u;
+const NUMBER = /^-?\d+\.?\d*%?$/;
+const DATETIME = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})?)?$/;
+const RESERVED_ANCHORS = new Set([
+  'NULL', 'UNDEFINED', 'ANY', 'NONE', 'TRUE', 'FALSE', 'SYSTEM', 'GLOBAL', 'LOCAL',
+]);
 
 /**
  * A comment made only of decoration (`# ====`, `# ----`, `# ── x ──`) carries no
@@ -89,6 +95,75 @@ interface ParsedStatement {
   error?: string;
 }
 
+function validAnchor(anchor: string): boolean {
+  if (anchor.length > 64 || /\s/.test(anchor)) return false;
+  const parts = anchor.split(':');
+  if (parts.length > 2) return false;
+  const namespace = parts.length === 2 ? parts[0].split('.') : [];
+  const name = parts[parts.length - 1] ?? '';
+  return (
+    namespace.every((part) => IDENTIFIER.test(part)) &&
+    IDENTIFIER.test(name) &&
+    !RESERVED_ANCHORS.has(name.toUpperCase())
+  );
+}
+
+interface AttributeResult {
+  attributes: Record<string, string>;
+  error?: string;
+}
+
+function parseAttributeBlock(body: string): AttributeResult {
+  const attributes: Record<string, string> = {};
+  const pairs: string[] = [];
+  let start = 0;
+  let quoted = false;
+
+  for (let i = 0; i < body.length; i++) {
+    const char = body[i];
+    if (quoted && char === '\\') i++;
+    else if (char === '"') quoted = !quoted;
+    else if (!quoted && char === ',') {
+      pairs.push(body.slice(start, i));
+      start = i + 1;
+    }
+  }
+  if (quoted) return { attributes, error: 'unterminated quoted string.' };
+  pairs.push(body.slice(start));
+
+  for (const pair of pairs) {
+    const trimmed = pair.trim();
+    if (!trimmed) return { attributes, error: 'empty modifier field.' };
+    const equals = trimmed.indexOf('=');
+    if (equals <= 0) return { attributes, error: `expected key=value, got "${trimmed}".` };
+    const key = trimmed.slice(0, equals).trim();
+    const rawValue = trimmed.slice(equals + 1).trim();
+    if (!IDENTIFIER.test(key) || !rawValue) {
+      return { attributes, error: `invalid key or missing value in "${trimmed}".` };
+    }
+
+    if (rawValue.startsWith('"')) {
+      try {
+        const value = JSON.parse(rawValue);
+        if (typeof value !== 'string') throw new Error('not a string');
+        attributes[key] = value;
+      } catch {
+        return { attributes, error: `invalid quoted value for "${key}".` };
+      }
+    } else if (
+      NUMBER.test(rawValue) ||
+      DATETIME.test(rawValue) ||
+      rawValue === 'true' ||
+      rawValue === 'false'
+    ) {
+      attributes[key] = rawValue;
+    } else {
+      return { attributes, error: `invalid value for "${key}".` };
+    }
+  }
+  return { attributes };
+}
+
 /** Parse one complete path expression, including modifiers on individual edges. */
 function parseStatement(statement: string): ParsedStatement {
   const text = withoutInlineComment(statement).trim();
@@ -97,6 +172,7 @@ function parseStatement(statement: string): ParsedStatement {
   ANCHOR.lastIndex = cursor;
   const first = ANCHOR.exec(text);
   if (!first) return { edges: [], error: 'expected a source anchor.' };
+  if (!validAnchor(first[1])) return { edges: [], error: `invalid anchor "${first[1]}".` };
   let source = first[1];
   cursor = ANCHOR.lastIndex;
   const edges: Omit<StlEdge, 'raw' | 'line'>[] = [];
@@ -109,6 +185,9 @@ function parseStatement(statement: string): ParsedStatement {
     ANCHOR.lastIndex = cursor;
     const targetMatch = ANCHOR.exec(text);
     if (!targetMatch) return { edges: [], error: 'expected a target anchor.' };
+    if (!validAnchor(targetMatch[1])) {
+      return { edges: [], error: `invalid anchor "${targetMatch[1]}".` };
+    }
     cursor = ANCHOR.lastIndex;
 
     const edge = { source, target: targetMatch[1], attributes: {} as Record<string, string> };
@@ -129,7 +208,9 @@ function parseStatement(statement: string): ParsedStatement {
         else if (!quoted && char === ')') balance--;
       }
       if (balance > 0) return { edges: [], error: 'unterminated ::mod( ... ).' };
-      Object.assign(edge.attributes, parseAttributes(text.slice(bodyStart, i - 1)));
+      const modifier = parseAttributeBlock(text.slice(bodyStart, i - 1));
+      if (modifier.error) return { edges: [], error: `invalid modifier: ${modifier.error}` };
+      Object.assign(edge.attributes, modifier.attributes);
       cursor = i;
     }
 
@@ -145,41 +226,7 @@ function parseStatement(statement: string): ParsedStatement {
  * separate attributes, which matters because descriptions are prose.
  */
 export function parseAttributes(body: string): Record<string, string> {
-  const attributes: Record<string, string> = {};
-  let key = '';
-  let value = '';
-  let inKey = true;
-  let quoted = false;
-
-  const commit = () => {
-    const name = key.trim();
-    if (name) attributes[name] = value.trim();
-    key = '';
-    value = '';
-    inKey = true;
-  };
-
-  for (let i = 0; i < body.length; i++) {
-    const char = body[i];
-    if (quoted) {
-      if (char === '\\' && body[i + 1] === '"') {
-        value += '"';
-        i++;
-      } else if (char === '"') {
-        quoted = false;
-      } else {
-        value += char;
-      }
-      continue;
-    }
-    if (char === '"') quoted = true;
-    else if (inKey && char === '=') inKey = false;
-    else if (char === ',') commit();
-    else if (inKey) key += char;
-    else value += char;
-  }
-  commit();
-  return attributes;
+  return parseAttributeBlock(body).attributes;
 }
 
 export function parseStl(source: string): StlDocument {
@@ -247,7 +294,17 @@ export function parseStl(source: string): StlDocument {
       if (balance > 0) break;
     }
 
-    const parsed = parseStatement(statement);
+    let parsed = parseStatement(statement);
+    while (i + 1 < lines.length) {
+      const next = lines[i + 1].trimStart();
+      const continuesWithArrow =
+        (!parsed.error || parsed.error === 'expected an edge.') && /^(?:->|→)/.test(next);
+      const continuesWithAnchor = parsed.error === 'expected a target anchor.' && next.startsWith('[');
+      if (!continuesWithArrow && !continuesWithAnchor) break;
+      i++;
+      statement += `\n${lines[i]}`;
+      parsed = parseStatement(statement);
+    }
     if (parsed.error) {
       errors.push(`Line ${startLine + 1}: ${parsed.error}`);
       continue;

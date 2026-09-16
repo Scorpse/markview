@@ -76,7 +76,7 @@ function Edge({ edge }: { edge: StlEdge }) {
 export default function StlView({ source }: StlViewProps) {
   const document = useMemo(() => parseStl(source), [source]);
 
-  if (document.edgeCount === 0 && document.sections.length === 0) {
+  if (document.edgeCount === 0 && document.sections.length === 0 && document.errors.length === 0) {
     return <p className="structured-empty">No STL statements found.</p>;
   }
 
@@ -102,8 +102,8 @@ export default function StlView({ source }: StlViewProps) {
             <p key={noteIndex} className="stl-note">{note}</p>
           ))}
           <ul className="stl-edges">
-            {section.edges.map((edge) => (
-              <Edge key={edge.line} edge={edge} />
+            {section.edges.map((edge, edgeIndex) => (
+              <Edge key={`${edge.line}:${edgeIndex}:${edge.source}:${edge.target}`} edge={edge} />
             ))}
           </ul>
         </section>

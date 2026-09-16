@@ -43,6 +43,21 @@ describe('parseStl', () => {
     });
   });
 
+  it('accepts canonical whitespace between path tokens', () => {
+    const doc = parseStl('[A]\n  ->\n[B]');
+    expect(doc.errors).toEqual([]);
+    expect(doc.sections[0].edges[0]).toMatchObject({ source: 'A', target: 'B' });
+  });
+
+  it('continues a chained path whose next arrow starts a new line', () => {
+    const doc = parseStl('[A] -> [B]\n  -> [C]');
+    expect(doc.errors).toEqual([]);
+    expect(doc.sections[0].edges).toMatchObject([
+      { source: 'A', target: 'B' },
+      { source: 'B', target: 'C' },
+    ]);
+  });
+
   it('expands a chained path and applies the modifier to its final edge', () => {
     const doc = parseStl('[A] -> [B] -> [C] ::mod(confidence=0.85)');
     expect(doc.errors).toEqual([]);
@@ -72,6 +87,26 @@ describe('parseStl', () => {
     expect(doc.errors).toEqual([]);
     expect(doc.edgeCount).toBe(1);
     expect(doc.sections[0].edges[0].attributes).toEqual({ rule: 'causal' });
+  });
+
+  it.each([
+    '[Not Valid!] -> [B]',
+    '[A:B:C] -> [B]',
+    '[NULL] -> [B]',
+  ])('rejects an invalid canonical anchor in %s', (source) => {
+    const doc = parseStl(source);
+    expect(doc.edgeCount).toBe(0);
+    expect(doc.errors[0]).toContain('invalid anchor');
+  });
+
+  it.each([
+    ['[A] -> [B] ::mod(confidence=banana)', 'invalid modifier'],
+    ['[A] -> [B] ::mod(broken)', 'invalid modifier'],
+    ['[A] -> [B] ::mod(description="unterminated)', 'unterminated'],
+  ])('rejects an invalid modifier in %s', (source, error) => {
+    const doc = parseStl(source);
+    expect(doc.edgeCount).toBe(0);
+    expect(doc.errors[0]).toContain(error);
   });
 
   it('parses a single edge with its attributes', () => {
