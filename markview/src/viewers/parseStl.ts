@@ -36,7 +36,9 @@ export interface StlDocument {
 /** Attributes worth showing before the reader expands the rest. */
 export const PRIMARY_ATTRIBUTES = ['action', 'rule', 'outcome', 'confidence'] as const;
 
-const EDGE_START = /^\s*\[([^\]]+)\]\s*->\s*\[([^\]]+)\]\s*::mod\s*\(/;
+const ANCHOR = /\s*\[([^\]]+)\]/y;
+const ARROW = /\s*(?:->|→)/y;
+const MODIFIER_START = /\s*::mod\s*\(/y;
 
 /**
  * A comment made only of decoration (`# ====`, `# ----`, `# ── x ──`) carries no
@@ -64,6 +66,78 @@ function parenBalance(text: string, startBalance: number): number {
     else if (char === ')') balance--;
   }
   return balance;
+}
+
+/** Remove an inline comment without treating a `#` inside a string as syntax. */
+function withoutInlineComment(text: string): string {
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (quoted && char === '\\') {
+      i++;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (!quoted && char === '#') {
+      return text.slice(0, i);
+    }
+  }
+  return text;
+}
+
+interface ParsedStatement {
+  edges: Omit<StlEdge, 'raw' | 'line'>[];
+  error?: string;
+}
+
+/** Parse one complete path expression, including modifiers on individual edges. */
+function parseStatement(statement: string): ParsedStatement {
+  const text = withoutInlineComment(statement).trim();
+  let cursor = 0;
+
+  ANCHOR.lastIndex = cursor;
+  const first = ANCHOR.exec(text);
+  if (!first) return { edges: [], error: 'expected a source anchor.' };
+  let source = first[1];
+  cursor = ANCHOR.lastIndex;
+  const edges: Omit<StlEdge, 'raw' | 'line'>[] = [];
+
+  while (cursor < text.length) {
+    ARROW.lastIndex = cursor;
+    if (!ARROW.exec(text)) return { edges: [], error: 'expected ->, →, or end of statement.' };
+    cursor = ARROW.lastIndex;
+
+    ANCHOR.lastIndex = cursor;
+    const targetMatch = ANCHOR.exec(text);
+    if (!targetMatch) return { edges: [], error: 'expected a target anchor.' };
+    cursor = ANCHOR.lastIndex;
+
+    const edge = { source, target: targetMatch[1], attributes: {} as Record<string, string> };
+    source = targetMatch[1];
+
+    while (true) {
+      MODIFIER_START.lastIndex = cursor;
+      if (!MODIFIER_START.exec(text)) break;
+      const bodyStart = MODIFIER_START.lastIndex;
+      let balance = 1;
+      let quoted = false;
+      let i = bodyStart;
+      for (; i < text.length && balance > 0; i++) {
+        const char = text[i];
+        if (quoted && char === '\\') i++;
+        else if (char === '"') quoted = !quoted;
+        else if (!quoted && char === '(') balance++;
+        else if (!quoted && char === ')') balance--;
+      }
+      if (balance > 0) return { edges: [], error: 'unterminated ::mod( ... ).' };
+      Object.assign(edge.attributes, parseAttributes(text.slice(bodyStart, i - 1)));
+      cursor = i;
+    }
+
+    edges.push(edge);
+    if (!text.slice(cursor).trim()) break;
+  }
+
+  return edges.length > 0 ? { edges } : { edges: [], error: 'expected an edge.' };
 }
 
 /**
@@ -142,38 +216,46 @@ export function parseStl(source: string): StlDocument {
       continue;
     }
 
-    const match = line.match(EDGE_START);
-    if (!match) {
+    if (!line.trimStart().startsWith('[')) {
       errors.push(`Line ${i + 1}: not a comment or an edge.`);
       continue;
     }
 
-    // Gather continuation lines until the ::mod(...) parentheses close.
+    // Gather continuation lines until modifiers close, including documented
+    // repeated modifier blocks on following lines.
     const startLine = i;
     let statement = line;
-    let balance = parenBalance(line.slice(line.indexOf('::mod') + 5), 0);
+    let balance = parenBalance(withoutInlineComment(line), 0);
     while (balance > 0 && i + 1 < lines.length) {
       i++;
       statement += `\n${lines[i]}`;
-      balance = parenBalance(lines[i], balance);
+      balance = parenBalance(withoutInlineComment(lines[i]), balance);
     }
     if (balance > 0) {
       errors.push(`Line ${startLine + 1}: unterminated ::mod( ... ).`);
       continue;
     }
+    while (i + 1 < lines.length && lines[i + 1].trimStart().startsWith('::mod')) {
+      i++;
+      statement += `\n${lines[i]}`;
+      balance = parenBalance(withoutInlineComment(lines[i]), 0);
+      while (balance > 0 && i + 1 < lines.length) {
+        i++;
+        statement += `\n${lines[i]}`;
+        balance = parenBalance(withoutInlineComment(lines[i]), balance);
+      }
+      if (balance > 0) break;
+    }
 
-    const open = statement.indexOf('(', statement.indexOf('::mod'));
-    const close = statement.lastIndexOf(')');
-    const body = open === -1 || close <= open ? '' : statement.slice(open + 1, close);
-
-    section().edges.push({
-      source: match[1].trim(),
-      target: match[2].trim(),
-      attributes: parseAttributes(body),
-      raw: statement,
-      line: startLine + 1,
-    });
-    edgeCount++;
+    const parsed = parseStatement(statement);
+    if (parsed.error) {
+      errors.push(`Line ${startLine + 1}: ${parsed.error}`);
+      continue;
+    }
+    for (const edge of parsed.edges) {
+      section().edges.push({ ...edge, raw: statement, line: startLine + 1 });
+      edgeCount++;
+    }
   }
 
   return { sections, edgeCount, errors };

@@ -27,6 +27,53 @@ describe('parseAttributes', () => {
 });
 
 describe('parseStl', () => {
+  it('parses a relation without a modifier block', () => {
+    const doc = parseStl('[A] -> [B]');
+    expect(doc.errors).toEqual([]);
+    expect(doc.edgeCount).toBe(1);
+    expect(doc.sections[0].edges[0].attributes).toEqual({});
+  });
+
+  it('accepts the canonical Unicode arrow', () => {
+    const doc = parseStl('[黄帝内经] → [素问]');
+    expect(doc.errors).toEqual([]);
+    expect(doc.sections[0].edges[0]).toMatchObject({
+      source: '黄帝内经',
+      target: '素问',
+    });
+  });
+
+  it('expands a chained path and applies the modifier to its final edge', () => {
+    const doc = parseStl('[A] -> [B] -> [C] ::mod(confidence=0.85)');
+    expect(doc.errors).toEqual([]);
+    expect(doc.edgeCount).toBe(2);
+    expect(doc.sections[0].edges).toMatchObject([
+      { source: 'A', target: 'B', attributes: {} },
+      { source: 'B', target: 'C', attributes: { confidence: '0.85' } },
+    ]);
+  });
+
+  it('merges documented repeated modifier blocks', () => {
+    const doc = parseStl(
+      '[Action] -> [Result]\n' +
+        '  ::mod(time="Present")\n' +
+        '  ::mod(confidence=0.85, verified=true)',
+    );
+    expect(doc.errors).toEqual([]);
+    expect(doc.sections[0].edges[0].attributes).toEqual({
+      time: 'Present',
+      confidence: '0.85',
+      verified: 'true',
+    });
+  });
+
+  it('ignores an inline comment after a statement', () => {
+    const doc = parseStl('[A] -> [B] ::mod(rule="causal") # supporting note');
+    expect(doc.errors).toEqual([]);
+    expect(doc.edgeCount).toBe(1);
+    expect(doc.sections[0].edges[0].attributes).toEqual({ rule: 'causal' });
+  });
+
   it('parses a single edge with its attributes', () => {
     const doc = parseStl('[A:One] -> [B:Two] ::mod(rule="logical", confidence=0.95)');
     expect(doc.edgeCount).toBe(1);
