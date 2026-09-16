@@ -3,26 +3,32 @@ import { parseAttributes, parseStl, splitAttributes, splitNode } from './parseSt
 
 describe('parseAttributes', () => {
   it('reads quoted and numeric values', () => {
-    expect(parseAttributes('rule="definitional", confidence=0.95')).toEqual({
-      rule: 'definitional',
-      confidence: '0.95',
-    });
+    expect(parseAttributes('rule="definitional", confidence=0.95')).toEqual([
+      ['rule', 'definitional'],
+      ['confidence', '0.95'],
+    ]);
   });
 
   it('keeps commas inside a quoted description', () => {
     const attributes = parseAttributes('description="one, two, three", confidence=0.9');
-    expect(attributes.description).toBe('one, two, three');
-    expect(attributes.confidence).toBe('0.9');
+    expect(attributes).toEqual([
+      ['description', 'one, two, three'],
+      ['confidence', '0.9'],
+    ]);
   });
 
   it('keeps parentheses and colons inside values', () => {
     const attributes = parseAttributes('source="file:a/b.md", description="see f(x)"');
-    expect(attributes.source).toBe('file:a/b.md');
-    expect(attributes.description).toBe('see f(x)');
+    expect(attributes).toEqual([
+      ['source', 'file:a/b.md'],
+      ['description', 'see f(x)'],
+    ]);
   });
 
   it('unescapes embedded quotes', () => {
-    expect(parseAttributes('description="say \\"hi\\""').description).toBe('say "hi"');
+    expect(parseAttributes('description="say \\"hi\\""')).toEqual([
+      ['description', 'say "hi"'],
+    ]);
   });
 });
 
@@ -31,7 +37,7 @@ describe('parseStl', () => {
     const doc = parseStl('[A] -> [B]');
     expect(doc.errors).toEqual([]);
     expect(doc.edgeCount).toBe(1);
-    expect(doc.sections[0].edges[0].attributes).toEqual({});
+    expect(doc.sections[0].edges[0].attributes).toEqual([]);
   });
 
   it('accepts the canonical Unicode arrow', () => {
@@ -63,8 +69,8 @@ describe('parseStl', () => {
     expect(doc.errors).toEqual([]);
     expect(doc.edgeCount).toBe(2);
     expect(doc.sections[0].edges).toMatchObject([
-      { source: 'A', target: 'B', attributes: {} },
-      { source: 'B', target: 'C', attributes: { confidence: '0.85' } },
+      { source: 'A', target: 'B', attributes: [] },
+      { source: 'B', target: 'C', attributes: [['confidence', '0.85']] },
     ]);
   });
 
@@ -75,38 +81,73 @@ describe('parseStl', () => {
         '  ::mod(confidence=0.85, verified=true)',
     );
     expect(doc.errors).toEqual([]);
-    expect(doc.sections[0].edges[0].attributes).toEqual({
-      time: 'Present',
-      confidence: '0.85',
-      verified: 'true',
-    });
+    expect(doc.sections[0].edges[0].attributes).toEqual([
+      ['time', 'Present'],
+      ['confidence', '0.85'],
+      ['verified', 'true'],
+    ]);
   });
 
   it('ignores an inline comment after a statement', () => {
     const doc = parseStl('[A] -> [B] ::mod(rule="causal") # supporting note');
     expect(doc.errors).toEqual([]);
     expect(doc.edgeCount).toBe(1);
-    expect(doc.sections[0].edges[0].attributes).toEqual({ rule: 'causal' });
+    expect(doc.sections[0].edges[0].attributes).toEqual([['rule', 'causal']]);
+  });
+
+  it('preserves future anchor and modifier forms without knowing their domain', () => {
+    const doc = parseStl(
+      '[Future Anchor] -> [Domain:Target/v2] ::mod(' +
+        'state=queued_v2, vector=[1,2,3], payload={mode:"fast"})',
+    );
+    expect(doc.errors).toEqual([]);
+    expect(doc.sections[0].edges[0]).toMatchObject({
+      source: 'Future Anchor',
+      target: 'Domain:Target/v2',
+      attributes: [
+        ['state', 'queued_v2'],
+        ['vector', '[1,2,3]'],
+        ['payload', '{mode:"fast"}'],
+      ],
+    });
+  });
+
+  it('does not treat parentheses inside a future anchor as modifier structure', () => {
+    const doc = parseStl('[Goal (draft] -> [Target]');
+    expect(doc.errors).toEqual([]);
+    expect(doc.sections[0].edges[0]).toMatchObject({
+      source: 'Goal (draft',
+      target: 'Target',
+    });
+  });
+
+  it('preserves unusual and duplicate future keys in exact source order', () => {
+    const doc = parseStl('[A] -> [B] ::mod(2=two, __proto__=safe, 2=second)');
+    expect(doc.errors).toEqual([]);
+    expect(doc.sections[0].edges[0].attributes).toEqual([
+      ['2', 'two'],
+      ['__proto__', 'safe'],
+      ['2', 'second'],
+    ]);
   });
 
   it.each([
-    '[Not Valid!] -> [B]',
-    '[A:B:C] -> [B]',
-    '[NULL] -> [B]',
-  ])('rejects an invalid canonical anchor in %s', (source) => {
-    const doc = parseStl(source);
-    expect(doc.edgeCount).toBe(0);
-    expect(doc.errors[0]).toContain('invalid anchor');
-  });
-
-  it.each([
-    ['[A] -> [B] ::mod(confidence=banana)', 'invalid modifier'],
     ['[A] -> [B] ::mod(broken)', 'invalid modifier'],
     ['[A] -> [B] ::mod(description="unterminated)', 'unterminated'],
-  ])('rejects an invalid modifier in %s', (source, error) => {
+  ])('rejects structurally broken modifier syntax in %s', (source, error) => {
     const doc = parseStl(source);
     expect(doc.edgeCount).toBe(0);
     expect(doc.errors[0]).toContain(error);
+  });
+
+  it.each([
+    '[A] -> [B] ::mod(payload=[1,2)',
+    '[A] -> [B] ::mod(payload={mode:"fast")',
+    '[A] -> [B] ::mod(payload=[1,2})',
+  ])('rejects unbalanced structured modifier values in %s', (source) => {
+    const doc = parseStl(source);
+    expect(doc.edgeCount).toBe(0);
+    expect(doc.errors[0]).toContain('unbalanced delimiter');
   });
 
   it('parses a single edge with its attributes', () => {
@@ -115,7 +156,7 @@ describe('parseStl', () => {
     const edge = doc.sections[0].edges[0];
     expect(edge.source).toBe('A:One');
     expect(edge.target).toBe('B:Two');
-    expect(edge.attributes).toEqual({ rule: 'logical', confidence: '0.95' });
+    expect(edge.attributes).toEqual([['rule', 'logical'], ['confidence', '0.95']]);
     expect(edge.line).toBe(1);
   });
 
@@ -130,8 +171,8 @@ describe('parseStl', () => {
     expect(doc.errors).toEqual([]);
     expect(doc.edgeCount).toBe(1);
     const edge = doc.sections[0].edges[0];
-    expect(edge.attributes.description).toBe('a long one, with commas');
-    expect(edge.attributes.source).toBe('PRD.pdf');
+    expect(edge.attributes).toContainEqual(['description', 'a long one, with commas']);
+    expect(edge.attributes).toContainEqual(['source', 'PRD.pdf']);
   });
 
   it('uses comments as section headings and ignores decoration', () => {
@@ -186,16 +227,23 @@ describe('parseStl', () => {
 });
 
 describe('presentation helpers', () => {
-  it('promotes the few attributes worth showing and hides description', () => {
-    const { primary, rest } = splitAttributes({
-      timestamp: 't',
-      confidence: '0.9',
-      action: 'decide',
-      description: 'body',
-      author: 'codex',
-    });
-    expect(primary.map(([k]) => k)).toEqual(['action', 'confidence']);
-    expect(rest.map(([k]) => k)).toEqual(['timestamp', 'author']);
+  it('arranges attributes by value shape and source order, not field name', () => {
+    const { visible, rest } = splitAttributes([
+      ['custom_state', 'queued'],
+      ['explanation', 'This domain-specific explanation reads as prose.'],
+      ['arbitrary_score', '0.9'],
+      ['profile_hint', 'future-v2'],
+      ['compact_fourth', 'yes'],
+      ['overflow_field', 'kept'],
+    ]);
+    expect(visible.map(({ key }) => key)).toEqual([
+      'custom_state',
+      'explanation',
+      'arbitrary_score',
+      'profile_hint',
+    ]);
+    expect(visible.map(({ narrative }) => narrative)).toEqual([false, true, false, false]);
+    expect(rest).toEqual([['compact_fourth', 'yes'], ['overflow_field', 'kept']]);
   });
 
   it('splits a namespaced node', () => {

@@ -327,9 +327,10 @@
   color: var(--link-color, #0969da);
 }
 
-.stl-badges {
+.stl-fields {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 6px;
   margin-top: 8px;
 }
@@ -351,15 +352,19 @@
   font-size: 9px;
 }
 
-.stl-outcome-pass { border-color: rgba(26, 127, 55, 0.5); }
-.stl-outcome-pending { border-color: rgba(191, 135, 0, 0.5); }
-.stl-outcome-fail { border-color: rgba(192, 0, 0, 0.5); }
-.stl-confidence-high { border-color: rgba(26, 127, 55, 0.4); }
-.stl-confidence-medium { border-color: rgba(191, 135, 0, 0.4); }
-.stl-confidence-low { border-color: rgba(192, 0, 0, 0.4); }
+.stl-narrative {
+  flex-basis: 100%;
+}
 
-.stl-description {
-  margin: 8px 0 0;
+.stl-narrative-key {
+  font-size: 9px;
+  opacity: 0.55;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stl-narrative p {
+  margin: 2px 0 0;
   font-size: 0.92em;
   line-height: 1.5;
 }

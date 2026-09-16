@@ -32,13 +32,28 @@ describe('StlView', () => {
     expect(screen.getByText('why it exists')).toBeTruthy();
   });
 
+  it('renders unknown domain fields without field-specific UI rules', () => {
+    render(
+      <StlView
+        source={'[Domain:A] -> [Domain:B] ::mod(explanation="A future domain can explain itself here", custom_phase=alpha)'}
+      />,
+    );
+    expect(screen.getByText('custom_phase')).toBeTruthy();
+    expect(screen.getByText('alpha')).toBeTruthy();
+    expect(screen.getByText('explanation')).toBeTruthy();
+    expect(screen.getByText('A future domain can explain itself here').tagName).toBe('P');
+    const explanation = screen.getByText('explanation');
+    const customPhase = screen.getByText('custom_phase');
+    expect(explanation.compareDocumentPosition(customPhase) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   // The stl-k profile carries ~12 attributes per edge; only a few belong up front.
   it('promotes the telling attributes and folds the rest away', () => {
     render(<StlView source={SOURCE} />);
     expect(screen.getByText('decide')).toBeTruthy();
     expect(screen.getByText('pass')).toBeTruthy();
     // author and timestamp are behind the expander, not shown as badges
-    expect(screen.getByText('2 more attributes')).toBeTruthy();
+    expect(screen.getByText('1 more attribute')).toBeTruthy();
   });
 
   it('reports unreadable lines without losing the rest', () => {

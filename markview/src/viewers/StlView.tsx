@@ -11,16 +11,6 @@ interface StlViewProps {
   source: string;
 }
 
-/** Outcome and confidence read as status, so they get a colour rather than a chip. */
-function badgeClass(key: string, value: string): string {
-  if (key === 'outcome') return `stl-badge stl-outcome-${value.toLowerCase().replace(/[^a-z]/g, '')}`;
-  if (key === 'confidence') {
-    const n = Number(value);
-    if (!Number.isNaN(n)) return `stl-badge stl-confidence-${n >= 0.9 ? 'high' : n >= 0.7 ? 'medium' : 'low'}`;
-  }
-  return 'stl-badge';
-}
-
 function Node({ node }: { node: string }) {
   const { namespace, name } = splitNode(node);
   return (
@@ -32,8 +22,7 @@ function Node({ node }: { node: string }) {
 }
 
 function Edge({ edge }: { edge: StlEdge }) {
-  const { primary, rest } = splitAttributes(edge.attributes);
-  const description = edge.attributes.description;
+  const { visible, rest } = splitAttributes(edge.attributes);
 
   return (
     <li className="stl-edge">
@@ -43,10 +32,15 @@ function Edge({ edge }: { edge: StlEdge }) {
         <Node node={edge.target} />
       </div>
 
-      {primary.length > 0 && (
-        <div className="stl-badges">
-          {primary.map(([key, value]) => (
-            <span key={key} className={badgeClass(key, value)}>
+      {visible.length > 0 && (
+        <div className="stl-fields">
+          {visible.map(({ key, value, narrative }, index) => narrative ? (
+            <div key={`${key}:${index}`} className="stl-narrative">
+              <span className="stl-narrative-key">{key}</span>
+              <p>{value}</p>
+            </div>
+          ) : (
+            <span key={`${key}:${index}`} className="stl-badge">
               <span className="stl-badge-key">{key}</span>
               {value}
             </span>
@@ -54,14 +48,12 @@ function Edge({ edge }: { edge: StlEdge }) {
         </div>
       )}
 
-      {description && <p className="stl-description">{description}</p>}
-
       {rest.length > 0 && (
         <details className="stl-details">
           <summary>{rest.length} more {rest.length === 1 ? 'attribute' : 'attributes'}</summary>
           <dl className="stl-attributes">
-            {rest.map(([key, value]) => (
-              <div key={key} className="stl-attribute">
+            {rest.map(([key, value], index) => (
+              <div key={`${key}:${index}`} className="stl-attribute">
                 <dt>{key}</dt>
                 <dd>{value}</dd>
               </div>

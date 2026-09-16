@@ -14,11 +14,13 @@
 export interface StlEdge {
   source: string;
   target: string;
-  attributes: Record<string, string>;
+  attributes: StlAttribute[];
   /** Original text, so the viewer can always fall back to what was written. */
   raw: string;
   line: number;
 }
+
+export type StlAttribute = [key: string, value: string];
 
 export interface StlSection {
   title: string;
@@ -33,18 +35,9 @@ export interface StlDocument {
   errors: string[];
 }
 
-/** Attributes worth showing before the reader expands the rest. */
-export const PRIMARY_ATTRIBUTES = ['action', 'rule', 'outcome', 'confidence'] as const;
-
 const ANCHOR = /\s*\[([^\]]+)\]/y;
 const ARROW = /\s*(?:->|→)/y;
 const MODIFIER_START = /\s*::mod\s*\(/y;
-const IDENTIFIER = /^[\p{L}\p{N}_][\p{L}\p{N}_-]*$/u;
-const NUMBER = /^-?\d+\.?\d*%?$/;
-const DATETIME = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})?)?$/;
-const RESERVED_ANCHORS = new Set([
-  'NULL', 'UNDEFINED', 'ANY', 'NONE', 'TRUE', 'FALSE', 'SYSTEM', 'GLOBAL', 'LOCAL',
-]);
 
 /**
  * A comment made only of decoration (`# ====`, `# ----`, `# ── x ──`) carries no
@@ -74,6 +67,15 @@ function parenBalance(text: string, startBalance: number): number {
   return balance;
 }
 
+/** Start continuation tracking at modifier syntax, never at anchor contents. */
+function initialModifierBalance(text: string): number {
+  const uncommented = withoutInlineComment(text);
+  const modifier = uncommented.indexOf('::mod');
+  if (modifier === -1) return 0;
+  const open = uncommented.indexOf('(', modifier + 5);
+  return open === -1 ? 0 : parenBalance(uncommented.slice(open), 0);
+}
+
 /** Remove an inline comment without treating a `#` inside a string as syntax. */
 function withoutInlineComment(text: string): string {
   let quoted = false;
@@ -96,39 +98,38 @@ interface ParsedStatement {
 }
 
 function validAnchor(anchor: string): boolean {
-  if (anchor.length > 64 || /\s/.test(anchor)) return false;
-  const parts = anchor.split(':');
-  if (parts.length > 2) return false;
-  const namespace = parts.length === 2 ? parts[0].split('.') : [];
-  const name = parts[parts.length - 1] ?? '';
-  return (
-    namespace.every((part) => IDENTIFIER.test(part)) &&
-    IDENTIFIER.test(name) &&
-    !RESERVED_ANCHORS.has(name.toUpperCase())
-  );
+  return anchor.length > 0 && anchor.trim() === anchor;
 }
 
 interface AttributeResult {
-  attributes: Record<string, string>;
+  attributes: StlAttribute[];
   error?: string;
 }
 
 function parseAttributeBlock(body: string): AttributeResult {
-  const attributes: Record<string, string> = {};
+  const attributes: StlAttribute[] = [];
   const pairs: string[] = [];
   let start = 0;
   let quoted = false;
+  const delimiters: string[] = [];
+  const closes: Record<string, string> = { ']': '[', '}': '{', ')': '(' };
 
   for (let i = 0; i < body.length; i++) {
     const char = body[i];
     if (quoted && char === '\\') i++;
     else if (char === '"') quoted = !quoted;
-    else if (!quoted && char === ',') {
+    else if (!quoted && (char === '[' || char === '{' || char === '(')) delimiters.push(char);
+    else if (!quoted && (char === ']' || char === '}' || char === ')')) {
+      if (delimiters.pop() !== closes[char]) {
+        return { attributes, error: `unbalanced delimiter "${char}".` };
+      }
+    } else if (!quoted && char === ',' && delimiters.length === 0) {
       pairs.push(body.slice(start, i));
       start = i + 1;
     }
   }
   if (quoted) return { attributes, error: 'unterminated quoted string.' };
+  if (delimiters.length > 0) return { attributes, error: 'unbalanced delimiter in value.' };
   pairs.push(body.slice(start));
 
   for (const pair of pairs) {
@@ -138,7 +139,7 @@ function parseAttributeBlock(body: string): AttributeResult {
     if (equals <= 0) return { attributes, error: `expected key=value, got "${trimmed}".` };
     const key = trimmed.slice(0, equals).trim();
     const rawValue = trimmed.slice(equals + 1).trim();
-    if (!IDENTIFIER.test(key) || !rawValue) {
+    if (!key || !rawValue) {
       return { attributes, error: `invalid key or missing value in "${trimmed}".` };
     }
 
@@ -146,19 +147,12 @@ function parseAttributeBlock(body: string): AttributeResult {
       try {
         const value = JSON.parse(rawValue);
         if (typeof value !== 'string') throw new Error('not a string');
-        attributes[key] = value;
+        attributes.push([key, value]);
       } catch {
         return { attributes, error: `invalid quoted value for "${key}".` };
       }
-    } else if (
-      NUMBER.test(rawValue) ||
-      DATETIME.test(rawValue) ||
-      rawValue === 'true' ||
-      rawValue === 'false'
-    ) {
-      attributes[key] = rawValue;
     } else {
-      return { attributes, error: `invalid value for "${key}".` };
+      attributes.push([key, rawValue]);
     }
   }
   return { attributes };
@@ -190,7 +184,7 @@ function parseStatement(statement: string): ParsedStatement {
     }
     cursor = ANCHOR.lastIndex;
 
-    const edge = { source, target: targetMatch[1], attributes: {} as Record<string, string> };
+    const edge = { source, target: targetMatch[1], attributes: [] as StlAttribute[] };
     source = targetMatch[1];
 
     while (true) {
@@ -210,7 +204,7 @@ function parseStatement(statement: string): ParsedStatement {
       if (balance > 0) return { edges: [], error: 'unterminated ::mod( ... ).' };
       const modifier = parseAttributeBlock(text.slice(bodyStart, i - 1));
       if (modifier.error) return { edges: [], error: `invalid modifier: ${modifier.error}` };
-      Object.assign(edge.attributes, modifier.attributes);
+      edge.attributes.push(...modifier.attributes);
       cursor = i;
     }
 
@@ -225,7 +219,7 @@ function parseStatement(statement: string): ParsedStatement {
  * Split a `::mod(...)` body into attributes. Commas inside quoted values do not
  * separate attributes, which matters because descriptions are prose.
  */
-export function parseAttributes(body: string): Record<string, string> {
+export function parseAttributes(body: string): StlAttribute[] {
   return parseAttributeBlock(body).attributes;
 }
 
@@ -272,7 +266,7 @@ export function parseStl(source: string): StlDocument {
     // repeated modifier blocks on following lines.
     const startLine = i;
     let statement = line;
-    let balance = parenBalance(withoutInlineComment(line), 0);
+    let balance = initialModifierBalance(line);
     while (balance > 0 && i + 1 < lines.length) {
       i++;
       statement += `\n${lines[i]}`;
@@ -285,7 +279,7 @@ export function parseStl(source: string): StlDocument {
     while (i + 1 < lines.length && lines[i + 1].trimStart().startsWith('::mod')) {
       i++;
       statement += `\n${lines[i]}`;
-      balance = parenBalance(withoutInlineComment(lines[i]), 0);
+      balance = initialModifierBalance(lines[i]);
       while (balance > 0 && i + 1 < lines.length) {
         i++;
         statement += `\n${lines[i]}`;
@@ -319,21 +313,18 @@ export function parseStl(source: string): StlDocument {
 }
 
 /** Split an attribute map into the few worth showing and the rest. */
-export function splitAttributes(attributes: Record<string, string>): {
-  primary: [string, string][];
-  rest: [string, string][];
+export function splitAttributes(attributes: StlAttribute[]): {
+  visible: { key: string; value: string; narrative: boolean }[];
+  rest: StlAttribute[];
 } {
-  const primary: [string, string][] = [];
-  const rest: [string, string][] = [];
-  for (const [key, value] of Object.entries(attributes)) {
-    if (key === 'description') continue; // rendered as the edge's body
-    if ((PRIMARY_ATTRIBUTES as readonly string[]).includes(key)) primary.push([key, value]);
-    else rest.push([key, value]);
-  }
-  primary.sort(
-    (a, b) => PRIMARY_ATTRIBUTES.indexOf(a[0] as never) - PRIMARY_ATTRIBUTES.indexOf(b[0] as never),
-  );
-  return { primary, rest };
+  return {
+    visible: attributes.slice(0, 4).map(([key, value]) => ({
+      key,
+      value,
+      narrative: /\s/.test(value) || value.length > 80,
+    })),
+    rest: attributes.slice(4),
+  };
 }
 
 /** `ns:Name` reads better split into its namespace and its name. */
