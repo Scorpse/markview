@@ -19,6 +19,7 @@ describe('fileKindFor', () => {
     ['events.ndjson', 'jsonl'],
     ['rows.csv', 'csv'],
     ['rows.tsv', 'csv'],
+    ['spec.stl', 'stl'],
     ['app.toml', 'config'],
     ['app.ini', 'config'],
     ['app.conf', 'config'],
@@ -30,6 +31,16 @@ describe('fileKindFor', () => {
   it('treats a bare .env file as config', () => {
     expect(fileKindFor('/home/user/project/.env')).toBe('config');
     expect(fileKindFor('C:\\project\\.ENV')).toBe('config');
+  });
+
+  it('treats the .stl-k.md convention as STL, not Markdown', () => {
+    expect(fileKindFor('desucla-help-local-poc.stl-k.md')).toBe('stl');
+    expect(fileKindFor('spec.stl.md')).toBe('stl');
+  });
+
+  it('leaves ordinary markdown alone', () => {
+    expect(fileKindFor('notes.md')).toBe('markdown');
+    expect(fileKindFor('install.md')).toBe('markdown');
   });
 
   it('falls back to markdown for anything unrecognised', () => {

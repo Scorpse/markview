@@ -39,6 +39,12 @@
         "mimeType": "text/markdown",
         "description": "Markdown Document",
         "role": "Viewer"
+      },
+      {
+        "ext": ["stl"],
+        "mimeType": "text/x-semantic-tension-language",
+        "description": "Semantic Tension Language Document",
+        "role": "Viewer"
       }
     ]
   }

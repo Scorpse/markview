@@ -251,3 +251,157 @@
   font-size: 12px;
   opacity: 0.7;
 }
+
+/* Semantic Tension Language document view. Sections come from the file's own
+   comment headings; each relation is a row with its few telling attributes
+   promoted and the rest folded away. */
+.stl-summary {
+  margin: 0 0 20px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.stl-section {
+  margin-bottom: 28px;
+}
+
+.stl-section-title {
+  margin: 0 0 4px;
+  font-size: 1.15em;
+  font-weight: 600;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stl-note {
+  margin: 4px 0 0;
+  font-size: 0.9em;
+  opacity: 0.75;
+}
+
+.stl-edges {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.stl-edge {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.stl-edge:hover {
+  background: var(--tab-hover);
+}
+
+.stl-relation {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stl-arrow {
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.stl-node {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+}
+
+.stl-node-ns {
+  opacity: 0.5;
+}
+
+.stl-node-ns::after {
+  content: ':';
+  opacity: 0.6;
+}
+
+.stl-node-name {
+  font-weight: 600;
+  color: var(--link-color, #0969da);
+}
+
+.stl-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.stl-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.stl-badge-key {
+  opacity: 0.55;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 9px;
+}
+
+.stl-narrative {
+  flex-basis: 100%;
+}
+
+.stl-narrative-key {
+  font-size: 9px;
+  opacity: 0.55;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stl-narrative p {
+  margin: 2px 0 0;
+  font-size: 0.92em;
+  line-height: 1.5;
+}
+
+.stl-details {
+  margin-top: 8px;
+}
+
+.stl-details summary {
+  font-size: 11px;
+  opacity: 0.6;
+  cursor: pointer;
+  user-select: none;
+}
+
+.stl-details summary:hover {
+  opacity: 1;
+}
+
+.stl-attributes {
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) 1fr;
+  gap: 2px 12px;
+  font-size: 0.82em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.stl-attribute {
+  display: contents;
+}
+
+.stl-attributes dt {
+  opacity: 0.6;
+}
+
+.stl-attributes dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

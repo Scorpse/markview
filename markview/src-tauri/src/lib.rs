@@ -18,6 +18,7 @@ const SUPPORTED_EXTENSIONS: &[&str] = &[
     ".ndjson",
     ".csv",
     ".tsv",
+    ".stl",
     ".toml",
     ".ini",
     ".env",

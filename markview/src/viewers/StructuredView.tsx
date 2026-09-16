@@ -12,6 +12,7 @@ import {
 } from './parseStructured';
 import ValueTree from './ValueTree';
 import DataTable from './DataTable';
+import StlView from './StlView';
 
 interface StructuredViewProps {
   kind: Exclude<FileKind, 'markdown'>;
@@ -167,6 +168,10 @@ export default function StructuredView({ kind }: StructuredViewProps) {
       );
     }
 
+    if (kind === 'stl') {
+      return <StlView source={source} />;
+    }
+
     if (kind === 'jsonl' && jsonl) {
       return (
         <>
@@ -195,7 +200,7 @@ export default function StructuredView({ kind }: StructuredViewProps) {
                 className={mode === 'view' ? 'active' : ''}
                 onClick={() => setMode('view')}
               >
-                {kind === 'csv' || kind === 'jsonl' ? 'Table' : 'Tree'}
+                {kind === 'csv' || kind === 'jsonl' ? 'Table' : kind === 'stl' ? 'Document' : 'Tree'}
               </button>
               <button
                 type="button"
