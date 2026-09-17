@@ -25,8 +25,7 @@ All notable changes to this fork are documented here. This project follows
 
 ### Notes
 
-- This release publishes Windows x64 NSIS and MSI installers. Linux packages remain available
-  from the 1.3.0 release until a Linux 1.4.0 build is produced on a Linux build host.
+- Ships Windows x64 NSIS/MSI installers and Linux x86-64 `.deb`, `.rpm` and AppImage packages.
 
 ## [1.3.0] — 2026-08-25
 
