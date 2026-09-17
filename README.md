@@ -70,20 +70,20 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 | Format | Link | Notes |
 |--------|------|-------|
-| `.deb` | [MarkView_1.3.0_amd64.deb](https://github.com/Scorpse/markview/releases/latest) | Debian / Ubuntu, uses system WebKit |
-| `.rpm` | [MarkView-1.3.0-1.x86_64.rpm](https://github.com/Scorpse/markview/releases/latest) | Fedora / RHEL / openSUSE |
-| `.AppImage` | [MarkView_1.3.0_amd64.AppImage](https://github.com/Scorpse/markview/releases/latest) | Any distro, self-contained |
+| `.deb` | [MarkView_1.4.0_amd64.deb](https://github.com/Scorpse/markview/releases/latest) | Debian / Ubuntu, uses system WebKit |
+| `.rpm` | [MarkView-1.4.0-1.x86_64.rpm](https://github.com/Scorpse/markview/releases/latest) | Fedora / RHEL / openSUSE |
+| `.AppImage` | [MarkView_1.4.0_amd64.AppImage](https://github.com/Scorpse/markview/releases/latest) | Any distro, self-contained |
 
 ```bash
 # .deb
-sudo dpkg -i MarkView_1.3.0_amd64.deb
+sudo dpkg -i MarkView_1.4.0_amd64.deb
 
 # .rpm
-sudo rpm -i MarkView-1.3.0-1.x86_64.rpm
+sudo rpm -i MarkView-1.4.0-1.x86_64.rpm
 
 # .AppImage
-chmod +x MarkView_1.3.0_amd64.AppImage
-./MarkView_1.3.0_amd64.AppImage
+chmod +x MarkView_1.4.0_amd64.AppImage
+./MarkView_1.4.0_amd64.AppImage
 ```
 
 > Releases are published through GitHub Releases only. This fork does not publish to the
