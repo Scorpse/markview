@@ -77,7 +77,7 @@ export default function AboutModal({ onClose }: AboutModalProps) {
         <div className="flex flex-col items-center text-center">
           <div className="text-3xl mb-2">M</div>
           <h2 className="text-lg font-bold mb-1">MarkView</h2>
-          <p className="text-xs text-gray-500 mb-4">Version 1.0.5</p>
+          <p className="text-xs text-gray-500 mb-4">Version 1.4.0</p>
 
           <p className="text-sm text-[var(--text-color)] mb-4 leading-relaxed">
             The simplest Markdown viewer.

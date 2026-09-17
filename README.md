@@ -61,8 +61,8 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 | Format | Link |
 |---------|------|
-| Installer (NSIS) | [MarkView_1.3.0_x64-setup.exe](https://github.com/Scorpse/markview/releases/latest) |
-| Installer (MSI) | [MarkView_1.3.0_x64_en-US.msi](https://github.com/Scorpse/markview/releases/latest) |
+| Installer (NSIS) | [MarkView_1.4.0_x64-setup.exe](https://github.com/Scorpse/markview/releases/latest) |
+| Installer (MSI) | [MarkView_1.4.0_x64_en-US.msi](https://github.com/Scorpse/markview/releases/latest) |
 
 > **Note:** Windows SmartScreen will warn about these files because they are not code-signed. To bypass: click **"More info"** → **"Run anyway"**. Alternatively, right-click the file → **Properties** → check **"Unblock"** → OK.
 

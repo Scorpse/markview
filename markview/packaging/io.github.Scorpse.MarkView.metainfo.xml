@@ -104,6 +104,17 @@
   </screenshots>
 
   <releases>
+    <release version="1.4.0" date="2026-09-17">
+      <description>
+        <p>Semantic Tension Language viewer:</p>
+        <ul>
+          <li>Open .stl documents from the picker, folder browser, drag and drop, or command line</li>
+          <li>Read declarations, relations, paths, modifiers, and nested blocks in a structured view</li>
+          <li>Remain compatible with new STL domains and relation types without viewer updates</li>
+          <li>Switch to source and retain readable content when diagnostics are present</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.5" date="2026-04-15">
       <description>
         <p>First Linux release:</p>
