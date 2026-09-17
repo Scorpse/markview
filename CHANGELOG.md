@@ -3,6 +3,31 @@
 All notable changes to this fork are documented here. This project follows
 [Semantic Versioning](https://semver.org/) and continues MarkView's version line.
 
+## [1.4.0] — 2026-09-17
+
+### Added
+
+- **Semantic Tension Language documents.** MarkView now opens `.stl` files in the normal
+  file picker, drag-and-drop flow, folder browser and command-line/file-association path.
+- **A domain-neutral STL reader** that presents declarations, relations, paths, modifiers and
+  nested blocks as a readable structured document rather than exposing the source as a fixed
+  set of relation types. Unknown and future STL domains remain viewable without an application
+  update.
+- **STL source access and diagnostics.** Readers can switch to the original source, while
+  malformed or incomplete constructs retain readable content and surface parsing diagnostics.
+
+### Changed
+
+- Packaged-file validation and Tauri permissions now recognise `.stl` alongside the existing
+  Markdown and structured-data formats.
+- Automated checks increased from 100 to 140, including real STL examples, domain-neutral
+  syntax coverage and viewer interaction tests.
+
+### Notes
+
+- This release publishes Windows x64 NSIS and MSI installers. Linux packages remain available
+  from the 1.3.0 release until a Linux 1.4.0 build is produced on a Linux build host.
+
 ## [1.3.0] — 2026-08-25
 
 First release of the community continuation. Opens a new minor line carrying every fix and
