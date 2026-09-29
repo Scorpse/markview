@@ -23,6 +23,16 @@ All notable changes to this fork are documented here. This project follows
 - Automated checks increased from 100 to 140, including real STL examples, domain-neutral
   syntax coverage and viewer interaction tests.
 
+### Fixed
+
+- **The AppImage failed AppImageHub's lint with "`.DirIcon` is missing".** The Tauri CLI used
+  to build it (2.10.1, bundling `tauri-bundler` 2.8.1) wrote `.DirIcon` as an absolute symlink
+  into the build machine's filesystem, which resolves on the machine that made the AppImage and
+  dangles everywhere else. The build now uses `@tauri-apps/cli` 2.11.5 (`tauri-bundler` 2.9.4,
+  which writes a relative link), and the 1.4.0 AppImage asset was rebuilt on 2026-09-30. Only
+  the AppImage asset was replaced; the application, its version and the other packages are
+  unchanged.
+
 ### Notes
 
 - Ships Windows x64 NSIS/MSI installers and Linux x86-64 `.deb`, `.rpm` and AppImage packages.
