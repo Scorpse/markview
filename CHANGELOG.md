@@ -32,6 +32,16 @@ All notable changes to this fork are documented here. This project follows
   which writes a relative link), and the 1.4.0 AppImage asset was rebuilt on 2026-09-30. Only
   the AppImage asset was replaced; the application, its version and the other packages are
   unchanged.
+- **The AppImage exited at once when run by a user other than its builder.** Tauri's bundler
+  writes `AppRun.wrapped` with mode `0770`, and the image records owner and mode. A FUSE mount
+  by the user does not enforce them, but a kernel mount does, which is how AppImageHub's
+  `firejail --appimage` test runs it, and there the launch failed with
+  `AppRun.wrapped: Permission denied`. `packaging/fix-appimage-permissions.sh` opens the modes
+  and repacks the image with its original runtime and compression, and the AppImage asset on
+  1.4.0 was replaced again with the result. It differs from the previous asset in that one
+  recorded mode (`-rwxrwx---` to `-rwxrwxr-x`); every file's contents are identical. The
+  step is documented in `packaging/README.md`, and `*.sh` files are now pinned to LF line
+  endings so the script survives a Windows checkout.
 
 ### Notes
 
