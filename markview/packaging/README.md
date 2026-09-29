@@ -27,6 +27,32 @@ git push origin main vX.Y.Z
 
 ---
 
+## Building the AppImage
+
+`npm run tauri build` produces the `.deb` and the `.AppImage`. Pass the
+AppImage through `packaging/fix-appimage-permissions.sh` before uploading it to
+the GitHub release:
+
+```bash
+bash packaging/fix-appimage-permissions.sh path/to/MarkView_X.Y.Z_amd64.AppImage
+```
+
+Tauri's AppImage bundler writes `AppRun.wrapped` with mode `0770`, and the image
+records owner and mode. A FUSE mount by the user does not enforce them, so it
+works on a developer machine, but a kernel mount, which is what AppImageHub's
+`firejail --appimage` test uses, refuses another user:
+
+```
+AppRun: line 12: .../AppRun.wrapped: Permission denied
+```
+
+and the application exits within seconds. The script opens the modes, repacks
+the image with its original runtime and compression, and changes nothing else.
+It replaces the file in place, or writes a second path if one is given. It needs
+`squashfs-tools` and no display.
+
+---
+
 ## Snap Store
 
 ### One-time setup
