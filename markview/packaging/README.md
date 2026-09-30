@@ -27,19 +27,37 @@ git push origin main vX.Y.Z
 
 ---
 
-## Building the AppImage
+## Building the Linux packages
 
-`npm run tauri build` produces the `.deb` and the `.AppImage`. Pass the
-AppImage through `packaging/fix-appimage-permissions.sh` before uploading it to
-the GitHub release:
+Build the `.deb`, `.rpm` and `.AppImage` with:
 
 ```bash
-bash packaging/fix-appimage-permissions.sh path/to/MarkView_X.Y.Z_amd64.AppImage
+bash markview/packaging/linux/build.sh          # from the repository root; output in ./linux-dist
 ```
 
-Tauri's AppImage bundler writes `AppRun.wrapped` with mode `0770`, and the image
-records owner and mode. A FUSE mount by the user does not enforce them, so it
-works on a developer machine, but a kernel mount, which is what AppImageHub's
+It needs Docker. It builds an Ubuntu 22.04 image (`packaging/linux/Dockerfile`),
+copies the source in without `node_modules` or build output, runs
+`npm run tauri build`, and then runs `fix-appimage-permissions.sh` on the
+AppImage. Do not build the release packages on a newer Ubuntu; both of the
+following have already cost a failed AppImageHub test.
+
+**Build on the oldest supported Ubuntu LTS (22.04).** The AppImage bundles
+WebKitGTK, GTK and their dependencies from the build machine, and the binary
+links against that machine's glibc. Built on Ubuntu 24.04 it needed glibc 2.39
+and stopped at start-up on 22.04 with
+
+```
+markview: .../libc.so.6: version `GLIBC_2.39' not found (required by markview)
+```
+
+Built on 22.04 the newest glibc anything in the image needs is 2.35, and newer
+systems run it unchanged. The same applies to the `.deb` and `.rpm`, which link
+the binary against the build machine's glibc too.
+
+**Open the file modes (`fix-appimage-permissions.sh`).** Tauri's AppImage
+bundler writes `AppRun.wrapped` with mode `0770`, and the image records owner
+and mode. A FUSE mount by the user does not enforce them, so it works on a
+developer machine, but a kernel mount, which is what AppImageHub's
 `firejail --appimage` test uses, refuses another user:
 
 ```

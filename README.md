@@ -72,7 +72,7 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 |--------|------|-------|
 | `.deb` | [MarkView_1.4.0_amd64.deb](https://github.com/Scorpse/markview/releases/latest) | Debian / Ubuntu, uses system WebKit |
 | `.rpm` | [MarkView-1.4.0-1.x86_64.rpm](https://github.com/Scorpse/markview/releases/latest) | Fedora / RHEL / openSUSE |
-| `.AppImage` | [MarkView_1.4.0_amd64.AppImage](https://github.com/Scorpse/markview/releases/latest) | Any distro, self-contained |
+| `.AppImage` | [MarkView_1.4.0_amd64.AppImage](https://github.com/Scorpse/markview/releases/latest) | Needs glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later); bundles WebKitGTK |
 
 ```bash
 # .deb
