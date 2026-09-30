@@ -50,6 +50,11 @@ All notable changes to this fork are documented here. This project follows
   `build.sh`, which also applies the permission fix), so a release does not silently move back
   to a newer Ubuntu. The 1.4.0 `.deb` and `.rpm` were built on 24.04 too, and were replaced with 22.04 builds
   the same day; their binary needs glibc 2.34 or newer.
+- **The AppImage could not be updated in place.** It carried no update information, so
+  AppImageUpdate and similar tools had nothing to read. Builds now embed it and publish a
+  `.zsync` file next to the AppImage (`packaging/embed-update-info.sh`), so an update
+  downloads only the blocks that changed. The 1.4.0 AppImage asset was replaced with one that carries it,
+  and the `.zsync` was added to that release.
 
 ### Notes
 

@@ -69,6 +69,17 @@ the image with its original runtime and compression, and changes nothing else.
 It replaces the file in place, or writes a second path if one is given. It needs
 `squashfs-tools` and no display.
 
+**Let users update it (`embed-update-info.sh`).** An AppImage can carry update
+information that AppImageUpdate and similar tools read to fetch only the blocks
+that changed. The script writes `gh-releases-zsync|Scorpse|markview|latest|MarkView_*_amd64.AppImage.zsync`
+into the runtime's `.upd_info` section, which leaves the squashfs untouched, and
+runs `zsyncmake` to produce `MarkView_<version>_amd64.AppImage.zsync`. Run it
+after the permission fix and on the file under its final name, since the
+`.zsync` records that name. **Upload the `.zsync` next to the AppImage in the
+release**: the update information looks for it there in the latest release, so
+an AppImage with no `.zsync` published beside it cannot be updated. It needs
+`binutils` (`readelf`) and `zsync`.
+
 ---
 
 ## Snap Store
