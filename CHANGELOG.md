@@ -42,6 +42,14 @@ All notable changes to this fork are documented here. This project follows
   recorded mode (`-rwxrwx---` to `-rwxrwxr-x`); every file's contents are identical. The
   step is documented in `packaging/README.md`, and `*.sh` files are now pinned to LF line
   endings so the script survives a Windows checkout.
+- **The AppImage would not start on Ubuntu 22.04 or Debian 12.** It was built on Ubuntu 24.04,
+  so its binary and the libraries it bundles needed glibc 2.39, and AppImageHub's 22.04 runner
+  stopped at start-up with `GLIBC_2.39 not found (required by markview)`. The AppImage asset on
+  1.4.0 was rebuilt on Ubuntu 22.04, where the newest glibc anything in it needs is 2.35, and
+  replaced. The build environment is now in the repository (`packaging/linux/Dockerfile` and
+  `build.sh`, which also applies the permission fix), so a release does not silently move back
+  to a newer Ubuntu. The 1.4.0 `.deb` and `.rpm` were built on 24.04 too and still need glibc
+  2.39 until they are rebuilt the same way.
 
 ### Notes
 
