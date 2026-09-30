@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       build-essential curl wget file ca-certificates git pkg-config \
       libwebkit2gtk-4.1-dev libxdo-dev libssl-dev \
       libayatana-appindicator3-dev librsvg2-dev \
-      rpm patchelf desktop-file-utils fuse3 libfuse2 xdg-utils squashfs-tools \
+      rpm patchelf desktop-file-utils fuse3 libfuse2 xdg-utils squashfs-tools zsync \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \

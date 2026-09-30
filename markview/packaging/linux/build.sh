@@ -7,7 +7,8 @@
 #
 # It builds the image from the Dockerfile next to this script, copies the source
 # into the container without node_modules or build output (so nothing from the
-# host leaks in), builds, then runs fix-appimage-permissions.sh on the AppImage.
+# host leaks in), builds, then runs fix-appimage-permissions.sh and
+# embed-update-info.sh on the AppImage.
 # Needs Docker. The source tree is mounted read-only.
 #
 # Inside the container this same file is run with --in-container.
@@ -48,6 +49,9 @@ bash packaging/fix-appimage-permissions.sh "$APPIMAGE"
 
 mkdir -p /out
 cp "$APPIMAGE" "/out/MarkView_${VERSION}_amd64.AppImage"
+# Update information and the .zsync file, so AppImageUpdate can update it. Done
+# on the final file, under its final name, because the .zsync records the name.
+bash packaging/embed-update-info.sh "/out/MarkView_${VERSION}_amd64.AppImage"
 cp src-tauri/target/release/bundle/deb/*.deb /out/
 cp src-tauri/target/release/bundle/rpm/*.rpm /out/
 ls -la /out
