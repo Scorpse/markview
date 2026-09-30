@@ -53,7 +53,8 @@ All notable changes to this fork are documented here. This project follows
 - **The AppImage could not be updated in place.** It carried no update information, so
   AppImageUpdate and similar tools had nothing to read. Builds now embed it and publish a
   `.zsync` file next to the AppImage (`packaging/embed-update-info.sh`), so an update
-  downloads only the blocks that changed. This applies to releases published from now on.
+  downloads only the blocks that changed. The 1.4.0 AppImage asset was replaced with one that carries it,
+  and the `.zsync` was added to that release.
 
 ### Notes
 
