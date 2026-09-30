@@ -31,7 +31,9 @@ POS=$((16#$POS)); SIZE=$((16#$SIZE))
 head -c "$SIZE" /dev/zero | dd of="$APPIMAGE" bs=1 seek="$POS" conv=notrunc status=none
 printf '%s' "$INFO" | dd of="$APPIMAGE" bs=1 seek="$POS" conv=notrunc status=none
 
-[ "$("$APPIMAGE" --appimage-updateinformation)" = "$INFO" ] \
+# Read the section back from the file. Asking the runtime (--appimage-updateinformation)
+# would start the application when APPIMAGE_EXTRACT_AND_RUN is set, as in the build container.
+[ "$(dd if="$APPIMAGE" bs=1 skip="$POS" count="$SIZE" status=none | tr -d '\0')" = "$INFO" ] \
   || { echo "embedded update information did not read back" >&2; exit 1; }
 
 # The URL is the bare file name: AppImageUpdate fetches it from the release
