@@ -48,8 +48,8 @@ All notable changes to this fork are documented here. This project follows
   1.4.0 was rebuilt on Ubuntu 22.04, where the newest glibc anything in it needs is 2.35, and
   replaced. The build environment is now in the repository (`packaging/linux/Dockerfile` and
   `build.sh`, which also applies the permission fix), so a release does not silently move back
-  to a newer Ubuntu. The 1.4.0 `.deb` and `.rpm` were built on 24.04 too and still need glibc
-  2.39 until they are rebuilt the same way.
+  to a newer Ubuntu. The 1.4.0 `.deb` and `.rpm` were built on 24.04 too, and were replaced with 22.04 builds
+  the same day; their binary needs glibc 2.34 or newer.
 
 ### Notes
 
