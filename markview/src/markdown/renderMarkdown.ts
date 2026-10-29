@@ -13,7 +13,7 @@ import type { Schema } from 'hast-util-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import rehypeStringify from 'rehype-stringify';
-import { visit } from 'unist-util-visit';
+import { SKIP, visit } from 'unist-util-visit';
 import type { Heading } from '../stores/appStore';
 import { rehypeAlerts } from './plugins/rehypeAlerts';
 import { remarkFrontmatterData } from './plugins/remarkFrontmatterData';
@@ -77,6 +77,21 @@ function headingCollector(headings: Heading[]) {
   };
 }
 
+function rehypeTableScroll() {
+  return (tree: any) => {
+    visit(tree, 'element', (node: any, index, parent: any) => {
+      if (node.tagName !== 'table' || typeof index !== 'number' || !parent) return;
+      parent.children[index] = {
+        type: 'element',
+        tagName: 'div',
+        properties: { className: ['markdown-table-scroll'] },
+        children: [node],
+      };
+      return [SKIP, index + 1];
+    });
+  };
+}
+
 export async function renderMarkdown(
   source: string,
   theme: 'light' | 'dark' = 'light',
@@ -97,6 +112,7 @@ export async function renderMarkdown(
     .use(rehypeRaw)
     .use(rehypeAlerts)
     .use(rehypeSanitize, sanitizeSchema)
+    .use(rehypeTableScroll)
     .use(rehypeHighlight, { plainText: ['mermaid', 'vega', 'vega-lite', ...specializedLanguages] })
     .use(rehypeKatex)
     .use(rehypeStringify);
