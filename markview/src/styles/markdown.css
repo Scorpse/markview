@@ -87,12 +87,26 @@
   padding-left: 2em;
 }
 
+.document-scroll-container {
+  container-type: inline-size;
+}
+
+.markdown-body .markdown-table-scroll {
+  position: relative;
+  left: 50%;
+  width: max-content;
+  max-width: calc(100cqi - 4rem);
+  margin-bottom: 16px;
+  overflow-x: auto;
+  transform: translateX(-50%);
+}
+
 .markdown-body table {
   border-spacing: 0;
   border-collapse: collapse;
   width: max-content;
-  max-width: 100%;
-  overflow: auto;
+  max-width: none;
+  margin-bottom: 0;
 }
 
 .markdown-body table th,
