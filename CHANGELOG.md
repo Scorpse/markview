@@ -31,7 +31,7 @@ All notable changes to this fork are documented here. This project follows
 - Linux packages are built on Ubuntu 22.04 (`packaging/linux/build.sh`), so the AppImage,
   `.deb` and `.rpm` need glibc 2.35 or newer rather than 2.39. The AppImage carries update
   information and a `.zsync` is published next to it, so AppImageUpdate can fetch only the
-  blocks that changed. These were applied to the 1.4.0 assets in September; 1.4.1 is the first
+  blocks that changed. These were applied to the 1.4.0 assets in September; 1.5.0 is the first
   release built this way from the start.
 - Dependencies: `js-yaml` 4.3.2, `time` 0.3.55, and the Tauri CLI 2.11.5.
 - Automated checks increased from 140 to 173.
