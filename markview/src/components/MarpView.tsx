@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { hasUnsafeUrlScheme } from '../utils/urlSafety';
 
 interface MarpViewProps {
   source: string;
@@ -10,8 +11,7 @@ function sanitizeMarpHtml(html: string): string {
   parsed.querySelectorAll<HTMLElement>('*').forEach((node) => {
     for (const attribute of Array.from(node.attributes)) {
       const name = attribute.name.toLowerCase();
-      const value = attribute.value.trim().toLowerCase();
-      if (name.startsWith('on') || ((name === 'href' || name === 'src') && value.startsWith('javascript:'))) {
+      if (name.startsWith('on') || ((name === 'href' || name === 'src') && hasUnsafeUrlScheme(attribute.value))) {
         node.removeAttribute(attribute.name);
       }
     }

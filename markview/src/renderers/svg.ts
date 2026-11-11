@@ -1,3 +1,5 @@
+import { hasUnsafeUrlScheme } from '../utils/urlSafety';
+
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const BLOCKED_ELEMENTS = 'script, iframe, object, embed';
 
@@ -26,8 +28,7 @@ export function safeSvgElement(svgText: string): SVGSVGElement {
   [svg, ...Array.from(svg.querySelectorAll('*'))].forEach((node) => {
     for (const attribute of Array.from(node.attributes)) {
       const name = attribute.name.toLowerCase();
-      const value = attribute.value.trim().toLowerCase();
-      if (name.startsWith('on') || ((name === 'href' || name.endsWith(':href')) && value.startsWith('javascript:'))) {
+      if (name.startsWith('on') || ((name === 'href' || name.endsWith(':href')) && hasUnsafeUrlScheme(attribute.value))) {
         node.removeAttribute(attribute.name);
       }
     }
