@@ -104,6 +104,16 @@
   </screenshots>
 
   <releases>
+    <release version="1.5.0" date="2026-11-11">
+      <description>
+        <p>New and fixed:</p>
+        <ul>
+          <li>Wide tables use the viewer width instead of being confined to the reading column</li>
+          <li>Diagram and slide sanitisers also reject vbscript: and non-image data: links</li>
+          <li>The AppImage starts on Ubuntu 22.04 and Debian 12, and can be updated with AppImageUpdate</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.4.0" date="2026-09-17">
       <description>
         <p>Semantic Tension Language viewer:</p>
