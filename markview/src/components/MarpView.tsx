@@ -11,7 +11,11 @@ function sanitizeMarpHtml(html: string): string {
     for (const attribute of Array.from(node.attributes)) {
       const name = attribute.name.toLowerCase();
       const value = attribute.value.trim().toLowerCase();
-      if (name.startsWith('on') || ((name === 'href' || name === 'src') && value.startsWith('javascript:'))) {
+      if (
+        name.startsWith('on') ||
+        ((name === 'href' || name === 'src') &&
+          (value.startsWith('javascript:') || value.startsWith('data:') || value.startsWith('vbscript:')))
+      ) {
         node.removeAttribute(attribute.name);
       }
     }
