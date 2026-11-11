@@ -215,7 +215,7 @@ function App() {
         <main className="flex-1 relative overflow-hidden flex flex-col">
           {searchVisible && <SearchBar />}
 
-          <div className="flex-1 overflow-y-auto w-full relative">
+          <div className="document-scroll-container flex-1 overflow-y-auto w-full relative">
             {!hasActiveFile ? (
               <WelcomePage loadFile={loadFile} />
             ) : fileKind === 'markdown' ? (

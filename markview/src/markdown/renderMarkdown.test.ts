@@ -71,4 +71,11 @@ describe('renderMarkdown', () => {
       { level: 1, text: '中文', id: '中文' },
     ]);
   });
+
+  it('wraps tables so wide columns can use the viewer width without stretching prose', async () => {
+    const result = await renderMarkdown('| Name | Description |\n| --- | --- |\n| MarkView | Reader |');
+
+    expect(result.html).toContain('<div class="markdown-table-scroll"><table>');
+    expect(result.html).toContain('</table></div>');
+  });
 });
