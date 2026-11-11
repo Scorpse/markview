@@ -27,7 +27,11 @@ export function safeSvgElement(svgText: string): SVGSVGElement {
     for (const attribute of Array.from(node.attributes)) {
       const name = attribute.name.toLowerCase();
       const value = attribute.value.trim().toLowerCase();
-      if (name.startsWith('on') || ((name === 'href' || name.endsWith(':href')) && value.startsWith('javascript:'))) {
+      if (
+        name.startsWith('on') ||
+        ((name === 'href' || name.endsWith(':href')) &&
+          (value.startsWith('javascript:') || value.startsWith('data:') || value.startsWith('vbscript:')))
+      ) {
         node.removeAttribute(attribute.name);
       }
     }
