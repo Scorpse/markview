@@ -3,6 +3,39 @@
 All notable changes to this fork are documented here. This project follows
 [Semantic Versioning](https://semver.org/) and continues MarkView's version line.
 
+## [1.5.0] — 2026-11-11
+
+### Added
+
+- **On-demand contrast check.** A toolbar button scans the open document for text that is hard
+  to read against its background and corrects only the display colours of those blocks, with a
+  badge showing how many were adjusted. The source file is never changed, and the adjustment is
+  cleared when the tab, theme or content changes. Nothing runs until the button is used.
+
+### Fixed
+
+- **Code in dark mode was close to unreadable.** The bundled highlight.js stylesheet is a light
+  palette, so identifiers and strings came out dark on a dark background. Dark documents now
+  use their own syntax palette.
+- **Wide tables were held to the width of the reading column.** A table wider than the text
+  now uses up to the viewer width, centred, and scrolls horizontally only past that, instead of
+  scrolling inside the column. Paragraphs keep their line length.
+- **The SVG and Marp slide sanitisers only rejected `javascript:` links.** CodeQL flagged both
+  as incomplete URL scheme checks. They now share one check that also rejects `vbscript:` and
+  `data:` URLs that are not raster images, and that ignores whitespace and control characters
+  inside the scheme (`java` + newline + `script:`). Inline `data:image/png`, `jpeg`, `gif`,
+  `webp`, `avif` and `bmp` images still render.
+
+### Changed
+
+- Linux packages are built on Ubuntu 22.04 (`packaging/linux/build.sh`), so the AppImage,
+  `.deb` and `.rpm` need glibc 2.35 or newer rather than 2.39. The AppImage carries update
+  information and a `.zsync` is published next to it, so AppImageUpdate can fetch only the
+  blocks that changed. These were applied to the 1.4.0 assets in September; 1.4.1 is the first
+  release built this way from the start.
+- Dependencies: `js-yaml` 4.3.2, `time` 0.3.55, and the Tauri CLI 2.11.5.
+- Automated checks increased from 140 to 173.
+
 ## [1.4.0] — 2026-09-17
 
 ### Added

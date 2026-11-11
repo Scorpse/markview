@@ -61,8 +61,8 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 | Format | Link |
 |---------|------|
-| Installer (NSIS) | [MarkView_1.4.0_x64-setup.exe](https://github.com/Scorpse/markview/releases/latest) |
-| Installer (MSI) | [MarkView_1.4.0_x64_en-US.msi](https://github.com/Scorpse/markview/releases/latest) |
+| Installer (NSIS) | [MarkView_1.5.0_x64-setup.exe](https://github.com/Scorpse/markview/releases/latest) |
+| Installer (MSI) | [MarkView_1.5.0_x64_en-US.msi](https://github.com/Scorpse/markview/releases/latest) |
 
 > **Note:** Windows SmartScreen will warn about these files because they are not code-signed. To bypass: click **"More info"** → **"Run anyway"**. Alternatively, right-click the file → **Properties** → check **"Unblock"** → OK.
 
@@ -70,20 +70,20 @@ If you need editing, sync, plugins, or note-taking, [Obsidian](https://obsidian.
 
 | Format | Link | Notes |
 |--------|------|-------|
-| `.deb` | [MarkView_1.4.0_amd64.deb](https://github.com/Scorpse/markview/releases/latest) | Debian / Ubuntu, uses system WebKit |
-| `.rpm` | [MarkView-1.4.0-1.x86_64.rpm](https://github.com/Scorpse/markview/releases/latest) | Fedora / RHEL / openSUSE |
-| `.AppImage` | [MarkView_1.4.0_amd64.AppImage](https://github.com/Scorpse/markview/releases/latest) | Needs glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later); bundles WebKitGTK |
+| `.deb` | [MarkView_1.5.0_amd64.deb](https://github.com/Scorpse/markview/releases/latest) | Debian / Ubuntu, uses system WebKit |
+| `.rpm` | [MarkView-1.5.0-1.x86_64.rpm](https://github.com/Scorpse/markview/releases/latest) | Fedora / RHEL / openSUSE |
+| `.AppImage` | [MarkView_1.5.0_amd64.AppImage](https://github.com/Scorpse/markview/releases/latest) | Needs glibc 2.35 or newer (Ubuntu 22.04, Debian 12, Fedora 36 and later); bundles WebKitGTK |
 
 ```bash
 # .deb
-sudo dpkg -i MarkView_1.4.0_amd64.deb
+sudo dpkg -i MarkView_1.5.0_amd64.deb
 
 # .rpm
-sudo rpm -i MarkView-1.4.0-1.x86_64.rpm
+sudo rpm -i MarkView-1.5.0-1.x86_64.rpm
 
 # .AppImage
-chmod +x MarkView_1.4.0_amd64.AppImage
-./MarkView_1.4.0_amd64.AppImage
+chmod +x MarkView_1.5.0_amd64.AppImage
+./MarkView_1.5.0_amd64.AppImage
 ```
 
 > Releases are published through GitHub Releases only. This fork does not publish to the
