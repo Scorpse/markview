@@ -52,6 +52,6 @@ cp "$APPIMAGE" "/out/MarkView_${VERSION}_amd64.AppImage"
 # Update information and the .zsync file, so AppImageUpdate can update it. Done
 # on the final file, under its final name, because the .zsync records the name.
 bash packaging/embed-update-info.sh "/out/MarkView_${VERSION}_amd64.AppImage"
-cp src-tauri/target/release/bundle/deb/*.deb /out/
-cp src-tauri/target/release/bundle/rpm/*.rpm /out/
+cp src-tauri/target/release/bundle/deb/*.deb "/out/MarkView_${VERSION}_amd64.deb"
+cp src-tauri/target/release/bundle/rpm/*.rpm "/out/MarkView-${VERSION}-1.x86_64.rpm"
 ls -la /out
