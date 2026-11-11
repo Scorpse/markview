@@ -33,6 +33,21 @@ describe('safeSvgElement', () => {
     expect(anchor.getAttribute('xlink:href')).toBeNull();
   });
 
+  it('strips data: and vbscript: links but keeps inline raster images', () => {
+    const svg = safeSvgElement(
+      '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">' +
+        '<a id="a" href="data:text/html,x"><text>x</text></a>' +
+        '<a id="b" xlink:href="vbscript:bad()"><text>y</text></a>' +
+        '<a id="c" href="java&#10;script:bad()"><text>z</text></a>' +
+        '<image id="d" href="data:image/png;base64,iVBORw0KGgo="/>' +
+        '</svg>',
+    );
+    expect(svg.querySelector('#a')?.getAttribute('href')).toBeNull();
+    expect(svg.querySelector('#b')?.getAttribute('xlink:href')).toBeNull();
+    expect(svg.querySelector('#c')?.getAttribute('href')).toBeNull();
+    expect(svg.querySelector('#d')?.getAttribute('href')).toBe('data:image/png;base64,iVBORw0KGgo=');
+  });
+
   it('rejects input whose root is not an SVG element', () => {
     expect(() => safeSvgElement('<div>not svg</div>')).toThrow('Renderer returned invalid SVG');
     expect(() => safeSvgElement('')).toThrow('Renderer returned invalid SVG');
