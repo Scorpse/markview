@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FolderOpen, Moon, Sun, ZoomIn, ZoomOut, Search, Info, StretchHorizontal } from 'lucide-react';
+import { FolderOpen, Moon, Sun, ZoomIn, ZoomOut, Search, Info, StretchHorizontal, ScanEye } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { documentWidthLabel, nextDocumentWidth } from './documentLayout';
 import { tauriCommands } from '../utils/tauriCommands';
@@ -20,6 +20,9 @@ export default function Toolbar({ loadFile }: ToolbarProps) {
     searchVisible,
     documentWidth,
     setDocumentWidth,
+    activeTabId,
+    contrastAdjustedBlocks,
+    requestContrastCheck,
   } = useAppStore();
 
   const handleOpenFile = async () => {
@@ -88,6 +91,23 @@ export default function Toolbar({ loadFile }: ToolbarProps) {
         title="Toggle Theme (Ctrl+Shift+T)"
       >
         {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+      </button>
+
+      <button
+        onClick={requestContrastCheck}
+        disabled={!activeTabId}
+        className="relative p-1.5 rounded hover:bg-[var(--tab-hover)] text-[var(--text-color)] disabled:opacity-40 disabled:cursor-not-allowed"
+        title={contrastAdjustedBlocks && contrastAdjustedBlocks > 0
+          ? `Contrast adjusted: ${contrastAdjustedBlocks} ${contrastAdjustedBlocks === 1 ? 'block' : 'blocks'} adjusted. Display colors only; source unchanged.`
+          : 'Check contrast'}
+        aria-label="Check contrast"
+      >
+        <ScanEye size={16} />
+        {contrastAdjustedBlocks !== null && contrastAdjustedBlocks > 0 && (
+          <span className="absolute -right-1 -top-1 min-w-3.5 h-3.5 px-0.5 rounded-full bg-[var(--link-color)] text-[var(--bg-color)] text-[9px] leading-3.5 text-center font-semibold">
+            {contrastAdjustedBlocks}
+          </span>
+        )}
       </button>
 
       <div className="w-px h-4 bg-[var(--border-color)] mx-0.5" />

@@ -44,6 +44,8 @@ export interface AppState {
   searchMatches: number;
   currentMatch: number;
   showSetDefault: boolean;
+  contrastCheckRevision: number;
+  contrastAdjustedBlocks: number | null;
 
   // Tab actions
   addTab: (path: string, content: string) => string;
@@ -63,6 +65,9 @@ export interface AppState {
   setSearchMatches: (count: number) => void;
   setCurrentMatch: (index: number) => void;
   setShowSetDefault: (show: boolean) => void;
+  requestContrastCheck: () => void;
+  setContrastAdjustedBlocks: (count: number) => void;
+  clearContrastResult: () => void;
 }
 
 let nextTabId = 1;
@@ -100,6 +105,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   searchMatches: 0,
   currentMatch: 0,
   showSetDefault: false,
+  contrastCheckRevision: 0,
+  contrastAdjustedBlocks: null,
 
   addTab: (path, content) => {
     const id = `tab-${nextTabId++}`;
@@ -188,4 +195,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   setSearchMatches: (count) => set({ searchMatches: count }),
   setCurrentMatch: (index) => set({ currentMatch: index }),
   setShowSetDefault: (show) => set({ showSetDefault: show }),
+  requestContrastCheck: () => set((state) => ({ contrastCheckRevision: state.contrastCheckRevision + 1 })),
+  setContrastAdjustedBlocks: (contrastAdjustedBlocks) => set({ contrastAdjustedBlocks }),
+  clearContrastResult: () => set({ contrastAdjustedBlocks: null }),
 }));
